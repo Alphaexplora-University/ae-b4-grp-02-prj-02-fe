@@ -18,13 +18,12 @@ export default function NotificationBell({
   onToggle,
   onSelect,
 }: NotificationBellProps) {
-  const urgent = items.filter(i => i.type === 'urgent')
   const activity = items.filter(i => i.type === 'activity')
 
   return (
     <div className="relative">
       {/* Bell Button */}
-      <button
+        <button
         type="button"
         onClick={onToggle}
         className="relative bg-[#1e1e1e] border border-[#2d2d2d] hover:border-[#3d3d3d] text-[#a3a3a3] hover:text-[#e5e5e5] p-2.5 rounded-xl transition-colors"
@@ -34,11 +33,12 @@ export default function NotificationBell({
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 17a2 2 0 0 0 4 0" />
         </svg>
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#39EF8E] text-[#071208] text-[10px] font-bold rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#EF4444] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
+
 
       {/* Dropdown */}
       {open && (
@@ -54,40 +54,18 @@ export default function NotificationBell({
             )}
           </div>
 
+
+
+          
+
           <div className="max-h-96 overflow-y-auto">
 
-            {/* Urgent Triage */}
-            {urgent.length > 0 && (
-              <div>
-                <p className="px-5 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#525252]">
-                  Urgent Triage
-                </p>
-                {urgent.map(item => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => onSelect(item)}
-                    className={`w-full text-left px-5 py-3 flex items-start gap-3 hover:bg-[#1e1e1e] transition-colors ${
-                      !item.read ? 'bg-[#39EF8E]/5' : ''
-                    }`}
-                  >
-                    {!item.read && (
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-[#39EF8E] shrink-0" />
-                    )}
-                    <div className={!item.read ? '' : 'ml-5'}>
-                      <p className="text-sm text-[#d4d4d4] font-medium">{item.customer_name}</p>
-                      <p className="text-xs text-[#525252] mt-0.5">{item.service_requested}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
+   
             {/* New Activity */}
             {activity.length > 0 && (
               <div>
                 <p className="px-5 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#525252] border-t border-[#232323]">
-                  New Activity
+                  New Booking Request
                 </p>
                 {activity.map(item => (
                   <button
@@ -95,11 +73,11 @@ export default function NotificationBell({
                     type="button"
                     onClick={() => onSelect(item)}
                     className={`w-full text-left px-5 py-3 flex items-start gap-3 hover:bg-[#1e1e1e] transition-colors ${
-                      !item.read ? 'bg-[#39EF8E]/5' : ''
+                      !item.read ? 'bg-[#FFB000]/5' : ''
                     }`}
                   >
                     {!item.read && (
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-[#39EF8E] shrink-0" />
+                      <span className="mt-1.5 w-2 h-2 rounded-full bg-[#FFB000] shrink-0" />
                     )}
                     <div className={!item.read ? '' : 'ml-5'}>
                       <p className="text-sm text-[#d4d4d4] font-medium">{item.customer_name}</p>
@@ -109,6 +87,7 @@ export default function NotificationBell({
                 ))}
               </div>
             )}
+
 
             {/* Empty State */}
             {items.length === 0 && (

@@ -169,12 +169,13 @@ export default function CustomerDashboardView() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#1B7245] to-[#29AB63] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                      {vendor.business_name.slice(0, 2).toUpperCase()}
+                      {vendor.business_name.slice(0, 2).toUpperCase()} 
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#f5f5f5]">
-                        {vendor.business_name}
+                      <p className="text-sm font-semibold mb-1 text-[#f5f5f5]">
+                        {vendor.business_name}  
                       </p>
+                      <p className="text-xs uppercase text-[#737373]"> {vendor.owner_name}</p>
                       <p className="text-xs text-[#737373]">{vendor.email}</p>
                     </div>
                   </div>

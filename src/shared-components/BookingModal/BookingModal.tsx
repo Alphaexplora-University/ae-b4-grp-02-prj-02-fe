@@ -103,7 +103,7 @@ export default function BookingModal({
           <div className="border border-yellow-600/40 bg-yellow-500/5 rounded-2xl px-5 py-4">
             <p className="text-yellow-500/90 text-xs leading-relaxed flex gap-2">
               <span className="shrink-0">⚠️</span>
-              <span>Updating booking status automatically sends a real-time email notification to the customer.</span>
+              <span>Updating booking status automatically sends a real-time  notification to the customer.</span>
             </p>
           </div>
         </div>

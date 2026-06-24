@@ -24,7 +24,7 @@ export interface Booking {
 
 export interface NotificationItem {
   id: string
-  type: 'urgent' | 'activity'
+  type:  'activity'
   customer_name: string
   service_requested: string
   booking_id: string

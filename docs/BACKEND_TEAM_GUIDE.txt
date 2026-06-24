@@ -1,0 +1,301 @@
+BACKEND TEAM GUIDE FOR VENDOR AND CUSTOMER PORTAL
+=================================================
+
+This document explains the current frontend portal structure in plain language so the backend team can understand what the app expects from the server.
+
+IMPORTANT NOTE
+--------------
+The current frontend is using localStorage as a temporary data layer. That means the app is acting like a mock backend right now. When the real backend is ready, these frontend actions should be replaced by API calls.
+
+Core idea
+---------
+There are two separate portals:
+1. Vendor Portal
+   - Used by service providers/vendors
+   - Lets them sign in, see bookings, and update booking status
+
+2. Customer Portal
+   - Used by customers
+   - Lets them sign up, sign in, view vendors, create bookings, and receive updates when vendor changes booking status
+
+------------------------------------------------------------
+VENDOR PORTAL
+------------------------------------------------------------
+Purpose
+-------
+The vendor portal allows a vendor to:
+- sign in
+- view incoming booking requests
+- update booking status (Pending, Accepted, Rejected)
+- see notification-style activity from bookings
+
+Main entry points
+-----------------
+- /login
+  - Vendor login page
+- /dashboard
+  - Vendor dashboard after login
+- /bookings
+  - Booking management screen
+
+Key frontend files
+------------------
+- src/features/auth/view/LoginView.tsx
+  - Vendor login UI screen
+- src/features/auth/viewmodel/useLoginViewModel.ts
+  - Handles login logic and redirects user after successful login
+- src/features/auth/model/auth.model.ts
+  - Defines the vendor login form structure and vendor data shape
+- src/features/dashboard/view/DashboardView.tsx
+  - Vendor dashboard UI
+- src/features/dashboard/viewmodel/useDashboardViewModel.ts
+  - Main logic for vendor dashboard
+- src/features/bookings/view/BookingsView.tsx
+  - Booking listing screen
+- src/features/bookings/viewmodel/useBookingsViewModel.ts
+  - Booking list and booking actions logic
+
+Vendor flow (current frontend behavior)
+--------------------------------------
+1. User opens /login.
+2. LoginView collects email and password.
+3. useLoginViewModel checks the vendors list in localStorage.
+4. If valid, the frontend saves a session in localStorage under the key: session
+5. The user is redirected to /dashboard.
+6. The vendor dashboard loads bookings from localStorage.
+7. The vendor can open a booking and update its status.
+8. Updating the status writes the new booking state back into localStorage.
+9. The frontend also builds notification items for the vendor dashboard.
+
+What backend should provide for vendor portal
+-------------------------------------------
+The backend should eventually provide:
+- POST /auth/vendor/login
+  - Validates vendor credentials
+  - Returns vendor session/token
+- GET /vendors/{vendorId}/bookings
+  - Returns bookings for that vendor
+- PATCH /bookings/{bookingId}/status
+  - Updates booking status
+- GET /vendors/{vendorId}/notifications
+  - Optional, if notifications are moved to backend
+
+Important data fields for vendor booking
+--------------------------------------
+Each booking should contain at least:
+- id
+- tracking_token
+- vendor_id
+- customer_name
+- customer_email
+- customer_phone
+- service_requested
+- notes
+- status
+- created_at
+- updated_at
+
+------------------------------------------------------------
+CUSTOMER PORTAL
+------------------------------------------------------------
+Purpose
+-------
+The customer portal allows a customer to:
+- sign up
+- sign in
+- view available vendors
+- create booking requests
+- see updates when a vendor changes their booking status
+
+Main entry points
+-----------------
+- /customer/login
+  - Customer login page
+- /customer/register
+  - Customer registration page
+- /customer/dashboard
+  - Customer dashboard after login
+
+Key frontend files
+------------------
+- src/features/customer_auth/view/CustomerLoginView.tsx
+  - Customer login UI screen
+- src/features/customer_auth/viewmodel/useCustomerLoginViewModel.ts
+  - Handles customer login logic
+- src/features/customer_auth/view/CustomerRegisterView.tsx
+  - Customer registration UI screen
+- src/features/customer_auth/viewmodel/useCustomerRegisterViewModel.ts
+  - Handles registration and saves customer data
+- src/features/customer_auth/model/customerAuth.model.ts
+  - Defines customer login/register form structure
+- src/features/customer_dashboard/view/CustomerDashboardView.tsx
+  - Customer dashboard UI
+- src/features/customer_dashboard/viewmodel/useCustomerDashboardViewModel.ts
+  - Main logic for customer dashboard
+- src/features/customer_dashboard/model/customerDashboard.model.ts
+  - Defines customer booking and notification structures
+
+Customer flow (current frontend behavior)
+----------------------------------------
+1. User opens /customer/login.
+2. Customer enters email and password.
+3. useCustomerLoginViewModel checks the customers list in localStorage.
+4. If valid, the frontend saves a session under the key: customer_session
+5. The user is redirected to /customer/dashboard.
+6. The customer dashboard loads vendors and bookings from localStorage.
+7. The customer can create a booking request for a vendor.
+8. The booking is saved into the bookings list in localStorage.
+9. When a vendor later changes booking status, the customer dashboard detects the change and creates a notification entry for the customer.
+
+What backend should provide for customer portal
+---------------------------------------------
+The backend should eventually provide:
+- POST /auth/customer/login
+  - Validates customer credentials
+  - Returns customer session/token
+- POST /auth/customer/register
+  - Creates a customer account
+- GET /vendors
+  - Returns list of vendors available for booking
+- POST /bookings
+  - Creates a new booking request
+- GET /customers/{customerId}/bookings
+  - Returns the customer’s bookings
+- GET /customers/{customerId}/notifications
+  - Returns notification history
+- PATCH /bookings/{bookingId}/status
+  - Used by vendor action, should notify the customer
+
+Important data fields for customer notification
+---------------------------------------------
+Each notification should contain:
+- id
+- booking_id
+- tracking_token
+- vendor_name
+- service_requested
+- old_status
+- new_status
+- read
+- created_at
+
+------------------------------------------------------------
+SYSTEM FLOW BETWEEN VENDOR AND CUSTOMER
+------------------------------------------------------------
+1. Customer creates a booking request.
+2. Booking is stored with a status of Pending.
+3. Vendor sees the booking in the vendor dashboard.
+4. Vendor updates the booking status to Accepted or Rejected.
+5. The booking record changes.
+6. The customer portal should detect that change and show a notification.
+7. The customer can then see the update in the dashboard bell/notification area.
+
+This is the most important integration point for the backend.
+The frontend currently simulates this by reading and comparing booking data in localStorage.
+In the real system, this should be handled by backend events or polling-based API refresh.
+
+------------------------------------------------------------
+MAIN ROUTES USED BY THE APP
+------------------------------------------------------------
+- /login
+- /register
+- /dashboard
+- /bookings
+- /customer/login
+- /customer/register
+- /customer/dashboard
+
+These routes are registered in:
+- src/App.tsx
+
+Route constants are defined in:
+- src/routes/index.tsx
+
+------------------------------------------------------------
+FOLDER STRUCTURE
+------------------------------------------------------------
+src/
+  App.tsx
+    - Main app router and route registration
+
+  routes/
+    index.tsx
+    - Central place for route constants
+
+  features/
+    auth/
+      view/LoginView.tsx
+      viewmodel/useLoginViewModel.ts
+      model/auth.model.ts
+      - Vendor login-related files
+
+    dashboard/
+      view/DashboardView.tsx
+      viewmodel/useDashboardViewModel.ts
+      model/dashboard.model.ts
+      - Vendor dashboard and booking notification logic
+
+    bookings/
+      view/BookingsView.tsx
+      viewmodel/useBookingsViewModel.ts
+      model/bookings.model.ts
+      - Booking list and booking management screens
+
+    customer_auth/
+      view/CustomerLoginView.tsx
+      view/CustomerRegisterView.tsx
+      viewmodel/useCustomerLoginViewModel.ts
+      viewmodel/useCustomerRegisterViewModel.ts
+      model/customerAuth.model.ts
+      - Customer sign-in and sign-up
+
+    customer_dashboard/
+      view/CustomerDashboardView.tsx
+      viewmodel/useCustomerDashboardViewModel.ts
+      model/customerDashboard.model.ts
+      - Customer dashboard, booking creation, notifications
+
+  shared-components/
+    AuthGuard/AuthGuard.tsx
+    AuthGuard/CustomerAuthGuard.tsx
+    BookingModal/BookingModal.tsx
+    DataTable/DataTable.tsx
+    FilterSelect/FilterSelect.tsx
+    NotificationBell/NotificationBell.tsx
+    Pagination/Pagination.tsx
+    SearchInput/SearchInput.tsx
+    Sidebar/Sidebar.tsx
+    StatusBadge/StatusBadge.tsx
+    - Reusable UI pieces used by both portals
+
+------------------------------------------------------------
+LOCALSTORAGE KEYS USED BY THE CURRENT FRONTEND
+------------------------------------------------------------
+- session
+  - Vendor login session
+- customer_session
+  - Customer login session
+- vendors
+  - Vendor accounts and vendor list
+- customers
+  - Customer accounts and customer list
+- bookings
+  - All booking requests and updates
+- notifications_<customerId>
+  - Customer notification history
+
+------------------------------------------------------------
+RECOMMENDED BACKEND INTEGRATION PLAN
+------------------------------------------------------------
+1. Replace localStorage auth with real auth endpoints.
+2. Replace localStorage booking read/write with database-backed booking APIs.
+3. Make booking status updates trigger a notification event for the customer.
+4. Return booking and notification data using a consistent JSON structure.
+5. Use real authentication tokens instead of plain localStorage session objects.
+
+If the backend team wants, the next step is to define the exact API contract for:
+- vendor login
+- customer login/register
+- booking creation
+- booking status change
+- customer notifications

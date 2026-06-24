@@ -1,7 +1,7 @@
 // ViewModel layer — owns all state, logic, and handlers
 // NO JSX, NO rendering
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type {
   Customer,
@@ -25,6 +25,7 @@ export function useCustomerDashboardViewModel() {
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null)
   const [formError, setFormError] = useState('')
   const [formSuccess, setFormSuccess] = useState('')
+  const bookingsRef = useRef<Booking[]>([])
 
   useEffect(() => {
     const session = localStorage.getItem('customer_session')
@@ -36,21 +37,63 @@ export function useCustomerDashboardViewModel() {
     const parsedCustomer: Customer = JSON.parse(session)
     setCustomer(parsedCustomer)
 
-    // Load vendors
-    const allVendors: Vendor[] = JSON.parse(localStorage.getItem('vendors') ?? '[]')
-    setVendors(allVendors)
+    const syncCustomerData = () => {
+      const allVendors: Vendor[] = JSON.parse(localStorage.getItem('vendors') ?? '[]')
+      setVendors(allVendors)
 
-    // Load customer bookings
-    const allBookings: Booking[] = JSON.parse(localStorage.getItem('bookings') ?? '[]')
-    const customerBookings = allBookings.filter(b => b.customer_id === parsedCustomer.id)
-    setBookings(customerBookings)
+      const allBookings: Booking[] = JSON.parse(localStorage.getItem('bookings') ?? '[]')
+      const customerBookings = allBookings.filter(b => b.customer_id === parsedCustomer.id)
+      const previousBookings = bookingsRef.current
+      const changedBookings = customerBookings.filter(currentBooking => {
+        const previousBooking = previousBookings.find(b => b.id === currentBooking.id)
+        return previousBooking && previousBooking.status !== currentBooking.status
+      })
 
-    // Load customer notifications
-    const allNotifications: CustomerNotification[] = JSON.parse(
-      localStorage.getItem(`notifications_${parsedCustomer.id}`) ?? '[]'
-    )
-    setNotifications(allNotifications)
-  }, [])
+      if (changedBookings.length > 0) {
+        const vendorMap = new Map(allVendors.map(vendor => [vendor.id, vendor]))
+        const storedNotifications: CustomerNotification[] = JSON.parse(
+          localStorage.getItem(`notifications_${parsedCustomer.id}`) ?? '[]'
+        )
+
+        const newNotifications = changedBookings.map(booking => {
+          const previousBooking = previousBookings.find(b => b.id === booking.id)
+          const vendor = vendorMap.get(booking.vendor_id)
+
+          return {
+            id: crypto.randomUUID(),
+            booking_id: booking.id,
+            tracking_token: booking.tracking_token,
+            service_requested: booking.service_requested,
+            vendor_name: vendor?.business_name ?? 'Vendor',
+            old_status: previousBooking?.status ?? 'Pending',
+            new_status: booking.status,
+            read: false,
+            created_at: new Date().toISOString(),
+          }
+        })
+
+        const mergedNotifications = [...newNotifications, ...storedNotifications]
+        localStorage.setItem(
+          `notifications_${parsedCustomer.id}`,
+          JSON.stringify(mergedNotifications)
+        )
+        setNotifications(mergedNotifications)
+      } else {
+        const storedNotifications: CustomerNotification[] = JSON.parse(
+          localStorage.getItem(`notifications_${parsedCustomer.id}`) ?? '[]'
+        )
+        setNotifications(storedNotifications)
+      }
+
+      bookingsRef.current = customerBookings
+      setBookings(customerBookings)
+    }
+
+    syncCustomerData()
+    const intervalId = window.setInterval(syncCustomerData, 2000)
+
+    return () => window.clearInterval(intervalId)
+  }, [navigate])
 
   const unreadCount = notifications.filter(n => !n.read).length
 
