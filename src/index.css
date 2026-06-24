@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* *, *::before, *::after {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+} */
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: #121212;
+  color: #a3a3a3;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

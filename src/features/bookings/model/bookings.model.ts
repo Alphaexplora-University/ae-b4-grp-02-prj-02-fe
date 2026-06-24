@@ -1,0 +1,40 @@
+// Model layer — pure TypeScript types only
+// ZERO functions, ZERO hooks
+
+export interface Booking {
+  id: string
+  tracking_token: string
+  vendor_id: string
+  customer_name: string
+  customer_email: string
+  customer_phone: string
+  service_requested: string
+  notes: string
+  status: 'Pending' | 'Accepted' | 'Rejected'
+  created_at: string
+  updated_at: string
+}
+
+export interface BookingsFilter {
+  search: string
+  status: 'All' | 'Pending' | 'Accepted' | 'Rejected'
+}
+
+export interface PaginationState {
+  currentPage: number
+  totalPages: number
+  perPage: number
+  total: number
+}
+
+export const DEFAULT_FILTER: BookingsFilter = {
+  search: '',
+  status: 'All',
+}
+
+export const DEFAULT_PAGINATION: PaginationState = {
+  currentPage: 1,
+  totalPages: 1,
+  perPage: 25,
+  total: 0,
+}
