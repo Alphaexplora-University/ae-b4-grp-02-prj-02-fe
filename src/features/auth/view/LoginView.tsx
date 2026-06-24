@@ -79,6 +79,23 @@ export default function LoginView() {
             </button>
           </p>
 
+          <div className="flex items-center gap-3 pt-1">
+            <div className="h-px flex-1 bg-[#2a2a2a]" />
+            <span className="text-[11px] uppercase tracking-[0.24em] text-[#525252]">Portal switch</span>
+            <div className="h-px flex-1 bg-[#2a2a2a]" />
+          </div>
+
+          <p className="text-center text-sm text-[#666666]">
+            Are you a customer?{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/customer/login')}
+              className="text-[#525252] hover:text-[#a3a3a3] font-medium"
+            >
+              Sign in here
+            </button>
+          </p>
+
         </div>
       </div>
     </div>

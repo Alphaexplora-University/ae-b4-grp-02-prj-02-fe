@@ -4,7 +4,6 @@
 import type { NotificationItem } from '../../features/dashboard/model/dashboard.model'
 
 interface NotificationBellProps {
-  count: number
   unread: number
   open: boolean
   items: NotificationItem[]
@@ -13,7 +12,6 @@ interface NotificationBellProps {
 }
 
 export default function NotificationBell({
-  count,
   unread,
   open,
   items,

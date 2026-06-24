@@ -162,7 +162,6 @@ export default function DashboardView() {
             <span className="text-[#8a8a8a]">Overview</span>
           </div>
           <NotificationBell
-            count={unreadCount}
             unread={unreadCount}
             open={notificationOpen}
             onToggle={onToggleNotifications}

@@ -79,6 +79,12 @@ export default function CustomerLoginView() {
             </button>
           </p>
 
+          <div className="flex items-center gap-3 pt-1">
+            <div className="h-px flex-1 bg-[#2a2a2a]" />
+            <span className="text-[11px] uppercase tracking-[0.24em] text-[#525252]">Portal switch</span>
+            <div className="h-px flex-1 bg-[#2a2a2a]" />
+          </div>
+
           {/* Vendor Link */}
           <p className="text-center text-sm text-[#666666]">
             Are you a vendor?{' '}
