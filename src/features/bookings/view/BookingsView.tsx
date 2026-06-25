@@ -168,7 +168,7 @@ export default function BookingsView() {
             <FilterSelect
               value={filter.status}
               onChange={onStatusChange}
-              options={['All', 'Pending', 'Accepted', 'Rejected'] as const}
+              options={['all', 'pending', 'accepted', 'rejected'] as const}
             />
           </div>
 

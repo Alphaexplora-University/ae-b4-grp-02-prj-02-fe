@@ -10,14 +10,14 @@ export interface Booking {
   customer_phone: string
   service_requested: string
   notes: string
-  status: 'Pending' | 'Accepted' | 'Rejected'
+  status: 'pending' | 'accepted' | 'rejected'
   created_at: string
   updated_at: string
 }
 
 export interface BookingsFilter {
   search: string
-  status: 'All' | 'Pending' | 'Accepted' | 'Rejected'
+  status: 'all' | 'pending' | 'accepted' | 'rejected'
 }
 
 export interface PaginationState {
@@ -29,7 +29,7 @@ export interface PaginationState {
 
 export const DEFAULT_FILTER: BookingsFilter = {
   search: '',
-  status: 'All',
+  status: 'all',
 }
 
 export const DEFAULT_PAGINATION: PaginationState = {

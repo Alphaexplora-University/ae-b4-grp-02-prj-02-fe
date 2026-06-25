@@ -7,9 +7,9 @@ import type { Booking } from '../../features/dashboard/model/dashboard.model'
 interface BookingModalProps {
   booking: Booking | null
   open: boolean
-  status: 'Pending' | 'Accepted' | 'Rejected'
+  status: 'pending' | 'accepted' | 'rejected'
   onClose: () => void
-  onStatusChange: (status: 'Pending' | 'Accepted' | 'Rejected') => void
+  onStatusChange: (status: 'pending' | 'accepted' | 'rejected') => void
   onSave: () => void
 }
 
@@ -83,12 +83,12 @@ export default function BookingModal({
             <div className="relative">
               <select
                 value={status}
-                onChange={e => onStatusChange(e.target.value as 'Pending' | 'Accepted' | 'Rejected')}
+                onChange={e => onStatusChange(e.target.value as 'pending' | 'accepted' | 'rejected')}
                 className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-sm px-5 py-2 text-sm text-[#f5f5f5] focus:outline-none focus:border-[#39EF8E]/50 transition-colors cursor-pointer appearance-none"
               >
-                <option value="Pending">Pending</option>
-                <option value="Accepted">Accepted</option>
-                <option value="Rejected">Rejected</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
               </select>
               {/* Custom Chevron Arrow */}
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-[#737373]">
