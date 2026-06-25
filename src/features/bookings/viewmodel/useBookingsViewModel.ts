@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import type { Booking, BookingsFilter, PaginationState } from '../model/bookings.model'
 import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '../model/bookings.model'
 import type { Vendor } from '../../dashboard/model/dashboard.model'
+import { bookingsApi } from '../../../api/bookingsApi'
+import { clearVendorSession, getVendorSession } from '../../../api/session'
 
 export function useBookingsViewModel() {
   const navigate = useNavigate()
@@ -16,18 +18,22 @@ export function useBookingsViewModel() {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGINATION)
 
   useEffect(() => {
-    const session = localStorage.getItem('session')
-    if (!session) {
+    const parsedVendor = getVendorSession()
+    if (!parsedVendor) {
       navigate('/login')
       return
     }
 
-    const parsedVendor: Vendor = JSON.parse(session)
     setVendor(parsedVendor)
 
-    const allStored: Booking[] = JSON.parse(localStorage.getItem('bookings') ?? '[]')
-    const vendorBookings = allStored.filter(b => b.vendor_id === parsedVendor.id)
-    setAllBookings(vendorBookings)
+    bookingsApi.getMyBookings()
+      .then(res => {
+        setAllBookings(res.data.data)
+      })
+      .catch(() => {
+        clearVendorSession()
+        navigate('/login')
+      })
   }, [])
 
   // Derived — filtered bookings
@@ -36,7 +42,7 @@ export function useBookingsViewModel() {
       b.customer_name.toLowerCase().includes(filter.search.toLowerCase()) ||
       b.customer_email.toLowerCase().includes(filter.search.toLowerCase()) ||
       b.service_requested.toLowerCase().includes(filter.search.toLowerCase())
-    const matchesStatus = filter.status === 'All' || b.status === filter.status
+    const matchesStatus = filter.status === 'all' || b.status === filter.status
     return matchesSearch && matchesStatus
   })
 
@@ -61,7 +67,7 @@ export function useBookingsViewModel() {
   }
 
   const onLogout = () => {
-    localStorage.removeItem('session')
+    clearVendorSession()
     navigate('/login')
   }
 

@@ -3,26 +3,26 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type {
-  Customer,
-  Vendor,
-  Booking,
-  CustomerNotification,
-  BookingForm,
-} from '../model/customerDashboard.model'
+import { bookingsApi, vendorsApi } from '../../../api/bookingsApi'
+import type { Customer, Vendor, Booking, CustomerNotification, BookingForm } from '../model/customerDashboard.model'
 import { DEFAULT_BOOKING_FORM } from '../model/customerDashboard.model'
+
+function normalizeStatus(status: Booking['status']) {
+  return status.toLowerCase()
+}
 
 export function useCustomerDashboardViewModel() {
   const navigate = useNavigate()
 
   const [customer, setCustomer] = useState<Customer | null>(null)
   const [vendors, setVendors] = useState<Vendor[]>([])
+  const [vendorsLoading, setVendorsLoading] = useState(true)
+  const [vendorsError, setVendorsError] = useState('')
   const [bookings, setBookings] = useState<Booking[]>([])
   const [notifications, setNotifications] = useState<CustomerNotification[]>([])
   const [notificationOpen, setNotificationOpen] = useState(false)
-  const [bookingForm, setBookingForm] = useState<BookingForm>(DEFAULT_BOOKING_FORM)
   const [bookingFormOpen, setBookingFormOpen] = useState(false)
-  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null)
+  const [bookingForm, setBookingForm] = useState<BookingForm>(DEFAULT_BOOKING_FORM)
   const [formError, setFormError] = useState('')
   const [formSuccess, setFormSuccess] = useState('')
   const bookingsRef = useRef<Booking[]>([])
@@ -37,35 +37,48 @@ export function useCustomerDashboardViewModel() {
     const parsedCustomer: Customer = JSON.parse(session)
     setCustomer(parsedCustomer)
 
-    const syncCustomerData = () => {
-      const allVendors: Vendor[] = JSON.parse(localStorage.getItem('vendors') ?? '[]')
-      setVendors(allVendors)
+    setVendorsLoading(true)
+    vendorsApi.getVendors()
+      .then(res => {
+        const vendorList = Array.isArray(res.data?.data) ? res.data.data : []
+        setVendors(vendorList)
+        setVendorsError('')
+      })
+      .catch(() => {
+        setVendors([])
+        setVendorsError('Could not load vendors. Please check that the backend is running.')
+      })
+      .finally(() => setVendorsLoading(false))
 
-      const allBookings: Booking[] = JSON.parse(localStorage.getItem('bookings') ?? '[]')
-      const customerBookings = allBookings.filter(b => b.customer_id === parsedCustomer.id)
+    const syncCustomerData = async () => {
+      const res = await bookingsApi.getCustomerBookings(parsedCustomer.email)
+      const customerBookings: Booking[] = Array.isArray(res.data?.data)
+        ? res.data.data.map((booking: Booking) => ({
+            ...booking,
+            customer_id: parsedCustomer.id,
+          }))
+        : []
       const previousBookings = bookingsRef.current
       const changedBookings = customerBookings.filter(currentBooking => {
         const previousBooking = previousBookings.find(b => b.id === currentBooking.id)
-        return previousBooking && previousBooking.status !== currentBooking.status
+        return previousBooking && normalizeStatus(previousBooking.status) !== normalizeStatus(currentBooking.status)
       })
 
       if (changedBookings.length > 0) {
-        const vendorMap = new Map(allVendors.map(vendor => [vendor.id, vendor]))
         const storedNotifications: CustomerNotification[] = JSON.parse(
           localStorage.getItem(`notifications_${parsedCustomer.id}`) ?? '[]'
         )
 
         const newNotifications = changedBookings.map(booking => {
           const previousBooking = previousBookings.find(b => b.id === booking.id)
-          const vendor = vendorMap.get(booking.vendor_id)
 
           return {
             id: crypto.randomUUID(),
             booking_id: booking.id,
             tracking_token: booking.tracking_token,
             service_requested: booking.service_requested,
-            vendor_name: vendor?.business_name ?? 'Vendor',
-            old_status: previousBooking?.status ?? 'Pending',
+            vendor_name: 'Vendor',
+            old_status: previousBooking?.status ?? 'pending',
             new_status: booking.status,
             read: false,
             created_at: new Date().toISOString(),
@@ -87,19 +100,30 @@ export function useCustomerDashboardViewModel() {
 
       bookingsRef.current = customerBookings
       setBookings(customerBookings)
+      localStorage.setItem('bookings', JSON.stringify(customerBookings))
     }
 
-    syncCustomerData()
-    const intervalId = window.setInterval(syncCustomerData, 2000)
+    const handleSyncError = () => {
+      const storedNotifications: CustomerNotification[] = JSON.parse(
+        localStorage.getItem(`notifications_${parsedCustomer.id}`) ?? '[]'
+      )
+      setNotifications(storedNotifications)
+    }
+
+    syncCustomerData().catch(handleSyncError)
+    const intervalId = window.setInterval(() => {
+      syncCustomerData().catch(() => {
+        handleSyncError()
+      })
+    }, 2000)
 
     return () => window.clearInterval(intervalId)
   }, [navigate])
 
   const unreadCount = notifications.filter(n => !n.read).length
 
-  const onOpenBookingForm = (vendor: Vendor) => {
-    setSelectedVendor(vendor)
-    setBookingForm({ ...DEFAULT_BOOKING_FORM, vendor_id: vendor.id })
+  const onOpenBookingForm = () => {
+    setBookingForm(DEFAULT_BOOKING_FORM)
     setFormError('')
     setFormSuccess('')
     setBookingFormOpen(true)
@@ -107,7 +131,6 @@ export function useCustomerDashboardViewModel() {
 
   const onCloseBookingForm = () => {
     setBookingFormOpen(false)
-    setSelectedVendor(null)
     setBookingForm(DEFAULT_BOOKING_FORM)
     setFormError('')
     setFormSuccess('')
@@ -116,43 +139,44 @@ export function useCustomerDashboardViewModel() {
   const onBookingFormChange = (field: keyof BookingForm, value: string) => {
     setBookingForm(prev => ({ ...prev, [field]: value }))
     setFormError('')
+    setFormSuccess('')
   }
 
-  const onSubmitBooking = () => {
-    if (!bookingForm.service_requested || !bookingForm.customer_phone) {
-      setFormError('Service requested and contact number are required.')
+  const onSubmitBooking = async () => {
+    if (!customer) return
+
+    if (!bookingForm.vendor_id || !bookingForm.service_requested || !bookingForm.customer_phone) {
+      setFormError('Please choose a vendor, enter the service needed, and provide your contact number.')
       return
     }
 
-    if (!customer || !selectedVendor) return
+    try {
+      const res = await bookingsApi.createInquiry({
+        vendorId: bookingForm.vendor_id,
+        customerName: customer.name,
+        customerEmail: customer.email,
+        customerPhone: bookingForm.customer_phone,
+        serviceRequested: bookingForm.service_requested,
+        notes: bookingForm.notes,
+      })
+      const createdBooking: Booking = {
+        ...res.data.data,
+        customer_id: customer.id,
+      }
 
-    const newBooking: Booking = {
-      id: crypto.randomUUID(),
-      tracking_token: `TKN-${Date.now()}`,
-      vendor_id: selectedVendor.id,
-      customer_id: customer.id,
-      customer_name: customer.name,
-      customer_email: customer.email,
-      customer_phone: bookingForm.customer_phone,
-      service_requested: bookingForm.service_requested,
-      notes: bookingForm.notes,
-      status: 'Pending',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      const allBookings: Booking[] = JSON.parse(localStorage.getItem('bookings') ?? '[]')
+      const updatedBookings = [createdBooking, ...allBookings]
+      localStorage.setItem('bookings', JSON.stringify(updatedBookings))
+      bookingsRef.current = [createdBooking, ...bookingsRef.current]
+      setBookings(prev => [createdBooking, ...prev])
+      setFormSuccess('Booking request sent. You can track its status in your booking history.')
+
+      window.setTimeout(() => {
+        onCloseBookingForm()
+      }, 1200)
+    } catch {
+      setFormError('We could not send your booking request. Please try again.')
     }
-
-    // Save to localStorage
-    const allBookings: Booking[] = JSON.parse(localStorage.getItem('bookings') ?? '[]')
-    allBookings.push(newBooking)
-    localStorage.setItem('bookings', JSON.stringify(allBookings))
-
-    // Update local state
-    setBookings(prev => [...prev, newBooking])
-    setFormSuccess('Booking submitted successfully!')
-
-    setTimeout(() => {
-      onCloseBookingForm()
-    }, 1500)
   }
 
   const onToggleNotifications = () => {
@@ -193,13 +217,14 @@ export function useCustomerDashboardViewModel() {
   return {
     customer,
     vendors,
+    vendorsLoading,
+    vendorsError,
     bookings,
     notifications,
     notificationOpen,
     unreadCount,
-    bookingForm,
     bookingFormOpen,
-    selectedVendor,
+    bookingForm,
     formError,
     formSuccess,
     onOpenBookingForm,

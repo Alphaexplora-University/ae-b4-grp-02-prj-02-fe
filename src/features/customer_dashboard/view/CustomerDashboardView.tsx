@@ -3,18 +3,44 @@
 
 import { useCustomerDashboardViewModel } from '../viewmodel/useCustomerDashboardViewModel'
 import StatusBadge from '../../../shared-components/StatusBadge/StatusBadge'
+import type { CustomerNotification } from '../model/customerDashboard.model'
+
+function getNotificationCopy(notification: CustomerNotification) {
+  const service = notification.service_requested
+  const status = notification.new_status.toLowerCase()
+
+  if (status === 'accepted') {
+    return {
+      title: 'Your booking was accepted',
+      message: `Good news! Your request for ${service} has been accepted.`,
+    }
+  }
+
+  if (status === 'rejected') {
+    return {
+      title: 'Your booking was declined',
+      message: `Sorry, your request for ${service} was declined. You may contact the vendor for more details.`,
+    }
+  }
+
+  return {
+    title: 'Your booking is waiting for review',
+    message: `Your request for ${service} is still waiting for the vendor to review it.`,
+  }
+}
 
 export default function CustomerDashboardView() {
   const {
     customer,
     vendors,
+    vendorsLoading,
+    vendorsError,
     bookings,
     notifications,
     notificationOpen,
     unreadCount,
-    bookingForm,
     bookingFormOpen,
-    selectedVendor,
+    bookingForm,
     formError,
     formSuccess,
     onOpenBookingForm,
@@ -83,37 +109,39 @@ export default function CustomerDashboardView() {
                       <p className="text-sm text-[#525252]">No notifications yet.</p>
                     </div>
                   ) : (
-                    notifications.map(n => (
-                      <div
-                        key={n.id}
-                        onClick={() => onMarkNotificationRead(n.id)}
-                        className={`px-5 py-4 border-b border-[#1e1e1e] cursor-pointer hover:bg-[#1e1e1e] transition-colors ${
-                          !n.read ? 'bg-[#39EF8E]/5' : ''
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          {!n.read && (
-                            <span className="mt-1.5 w-2 h-2 rounded-full bg-[#39EF8E] shrink-0" />
-                          )}
-                          <div className={!n.read ? '' : 'ml-5'}>
-                            <p className="text-sm text-[#f5f5f5] font-medium">
-                              Booking Status Updated
-                            </p>
-                            <p className="text-xs text-[#737373] mt-0.5">
-                              {n.service_requested} — {n.vendor_name}
-                            </p>
-                            <div className="flex items-center gap-2 mt-1.5">
-                              <StatusBadge status={n.old_status} />
-                              <span className="text-[#525252] text-xs">→</span>
-                              <StatusBadge status={n.new_status} />
+                    notifications.map(n => {
+                      const copy = getNotificationCopy(n)
+
+                      return (
+                        <div
+                          key={n.id}
+                          onClick={() => onMarkNotificationRead(n.id)}
+                          className={`px-5 py-4 border-b border-[#1e1e1e] cursor-pointer hover:bg-[#1e1e1e] transition-colors ${
+                            !n.read ? 'bg-[#39EF8E]/5' : ''
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            {!n.read && (
+                              <span className="mt-1.5 w-2 h-2 rounded-full bg-[#39EF8E] shrink-0" />
+                            )}
+                            <div className={!n.read ? '' : 'ml-5'}>
+                              <p className="text-sm text-[#f5f5f5] font-medium">
+                                {copy.title}
+                              </p>
+                              <p className="text-xs text-[#737373] mt-1 leading-relaxed">
+                                {copy.message}
+                              </p>
+                              <div className="mt-2">
+                                <StatusBadge status={n.new_status} />
+                              </div>
+                              <p className="text-[10px] text-[#525252] mt-1.5">
+                                {new Date(n.created_at).toLocaleString()}
+                              </p>
                             </div>
-                            <p className="text-[10px] text-[#525252] mt-1.5">
-                              {new Date(n.created_at).toLocaleString()}
-                            </p>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      )
+                    })
                   )}
                 </div>
               </div>
@@ -139,69 +167,28 @@ export default function CustomerDashboardView() {
             Welcome, {customer?.name}!
           </h1>
           <p className="text-xs text-[#666666]">
-            Browse vendors and manage your bookings.
+            Track your booking requests and status updates.
           </p>
         </div>
 
-        {/* Vendor List */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
-                Vendors
-              </p>
-              <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
-                Available Vendors
-              </h2>
-            </div>
-          </div>
-
-          {vendors.length === 0 ? (
-            <div className="bg-[#161616] border border-[#232323] rounded-2xl p-12 text-center">
-              <p className="text-sm text-[#525252]">No vendors available yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {vendors.map(vendor => (
-                <div
-                  key={vendor.id}
-                  className="bg-[#161616] border border-[#232323] rounded-2xl p-6 space-y-4 hover:border-[#39EF8E]/30 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#1B7245] to-[#29AB63] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                      {vendor.business_name.slice(0, 2).toUpperCase()} 
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold mb-1 text-[#f5f5f5]">
-                        {vendor.business_name}  
-                      </p>
-                      <p className="text-xs uppercase text-[#737373]"> {vendor.owner_name}</p>
-                      <p className="text-xs text-[#737373]">{vendor.email}</p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => onOpenBookingForm(vendor)}
-                    className="w-full bg-[#39EF8E] text-[#071208] text-sm font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
         {/* My Bookings */}
         <section className="space-y-4">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
-              My Bookings
-            </p>
-            <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
-              Booking History
-            </h2>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
+                My Bookings
+              </p>
+              <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
+                Booking History
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={onOpenBookingForm}
+              className="bg-[#39EF8E] text-[#071208] text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+            >
+              Book Vendor
+            </button>
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-[#262626] bg-[#1b1b1b]">
@@ -223,24 +210,21 @@ export default function CustomerDashboardView() {
                   {bookings.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-4 py-12 text-center text-sm text-[#525252]">
-                        No bookings yet. Book a vendor above!
+                        No bookings yet.
                       </td>
                     </tr>
                   ) : (
-                    bookings.map(booking => {
-                      const vendor = vendors.find(v => v.id === booking.vendor_id)
-                      return (
-                        <tr key={booking.id} className="hover:bg-[#1e1e1e] transition-colors">
-                          <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.tracking_token}</td>
-                          <td className="px-4 py-3 text-sm text-[#d4d4d4]">{vendor?.business_name ?? '—'}</td>
-                          <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.service_requested}</td>
-                          <td className="px-4 py-3"><StatusBadge status={booking.status} /></td>
-                          <td className="px-4 py-3 text-sm text-[#d4d4d4]">
-                            {new Date(booking.created_at).toLocaleDateString()}
-                          </td>
-                        </tr>
-                      )
-                    })
+                    bookings.map(booking => (
+                      <tr key={booking.id} className="hover:bg-[#1e1e1e] transition-colors">
+                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.tracking_token}</td>
+                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">Vendor</td>
+                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.service_requested}</td>
+                        <td className="px-4 py-3"><StatusBadge status={booking.status} /></td>
+                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">
+                          {new Date(booking.created_at).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))
                   )}
                 </tbody>
               </table>
@@ -249,23 +233,20 @@ export default function CustomerDashboardView() {
         </section>
       </div>
 
-      {/* BOOKING FORM MODAL */}
-      {bookingFormOpen && selectedVendor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {bookingFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={onCloseBookingForm}
           />
           <div className="relative z-10 w-full max-w-lg bg-[#161616] border border-[#232323] rounded-2xl p-8 space-y-5 shadow-2xl">
-
-            {/* Header */}
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
                   New Booking
                 </p>
                 <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
-                  {selectedVendor.business_name}
+                  Book Vendor
                 </h2>
               </div>
               <button
@@ -281,21 +262,45 @@ export default function CustomerDashboardView() {
 
             <div className="border-t border-[#232323]" />
 
-            {/* Error */}
             {formError && (
               <div className="bg-red-950/50 border border-red-800/50 rounded-lg px-4 py-3">
                 <p className="text-red-400 text-sm">{formError}</p>
               </div>
             )}
 
-            {/* Success */}
             {formSuccess && (
               <div className="bg-green-950/50 border border-green-800/50 rounded-lg px-4 py-3">
                 <p className="text-[#39EF8E] text-sm">{formSuccess}</p>
               </div>
             )}
 
-            {/* Service Requested */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
+                Vendor
+              </label>
+              <select
+                value={bookingForm.vendor_id}
+                onChange={e => onBookingFormChange('vendor_id', e.target.value)}
+                disabled={vendorsLoading || vendors.length === 0}
+                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
+              >
+                <option value="">
+                  {vendorsLoading ? 'Loading vendors...' : 'Choose a vendor'}
+                </option>
+                {vendors.map(vendor => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.business_name}
+                  </option>
+                ))}
+              </select>
+              {vendorsError && (
+                <p className="text-xs text-red-400">{vendorsError}</p>
+              )}
+              {!vendorsLoading && !vendorsError && vendors.length === 0 && (
+                <p className="text-xs text-[#737373]">No vendors are available yet.</p>
+              )}
+            </div>
+
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
                 Service Requested
@@ -304,12 +309,11 @@ export default function CustomerDashboardView() {
                 type="text"
                 value={bookingForm.service_requested}
                 onChange={e => onBookingFormChange('service_requested', e.target.value)}
-                placeholder="e.g. Wedding Photography"
+                placeholder="e.g. Wedding photography"
                 className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] placeholder-[#404040] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
               />
             </div>
 
-            {/* Contact Number */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
                 Contact Number
@@ -323,21 +327,19 @@ export default function CustomerDashboardView() {
               />
             </div>
 
-            {/* Notes */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
-                Notes (Optional)
+                Notes
               </label>
               <textarea
                 value={bookingForm.notes}
                 onChange={e => onBookingFormChange('notes', e.target.value)}
-                placeholder="Any special requests or details..."
+                placeholder="Optional details for the vendor"
                 rows={3}
                 className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] placeholder-[#404040] focus:outline-none focus:border-[#39EF8E]/50 transition-colors resize-none"
               />
             </div>
 
-            {/* Actions */}
             <div className="flex gap-3 pt-2">
               <button
                 type="button"

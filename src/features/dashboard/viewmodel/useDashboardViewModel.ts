@@ -1,14 +1,8 @@
-// ViewModel layer — owns all state, logic, and handlers
-// NO JSX, NO rendering
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type {
-  Booking,
-  Vendor,
-  NotificationItem,
-  DashboardMetrics,
-} from "../model/dashboard.model";
+import { bookingsApi } from "../../../api/bookingsApi";
+import { clearVendorSession, getVendorSession } from "../../../api/session";
+import type { Booking, Vendor, NotificationItem, DashboardMetrics } from "../model/dashboard.model";
 
 export function useDashboardViewModel() {
   const navigate = useNavigate();
@@ -17,14 +11,10 @@ export function useDashboardViewModel() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [notificationItems, setNotificationItems] = useState<
-    NotificationItem[]
-  >([]);
+  const [notificationItems, setNotificationItems] = useState<NotificationItem[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<
-    "Pending" | "Accepted" | "Rejected"
-  >("Pending");
+  const [selectedStatus, setSelectedStatus] = useState<"pending" | "accepted" | "rejected">("pending");
   const [modalOpen, setModalOpen] = useState(false);
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     todayVolume: 0,
@@ -32,32 +22,27 @@ export function useDashboardViewModel() {
     activeBacklog: 0,
   });
 
-  // Load vendor session and bookings from localStorage
   useEffect(() => {
-    const session = localStorage.getItem("session");
-    if (!session) {
+    const parsedVendor = getVendorSession();
+    if (!parsedVendor) {
       navigate("/login");
       return;
     }
 
-    const parsedVendor: Vendor = JSON.parse(session);
     setVendor(parsedVendor);
 
-    ///uu========================
-    const allBookings: Booking[] = JSON.parse(
-      localStorage.getItem("bookings") ?? "[]",
-    );
-
-    // HARDCODED SEED — for checking wkwkwkkwkw
-
-
-    const vendorBookings = allBookings.filter(
-      (b) => b.vendor_id === parsedVendor.id,
-    );
-
-    setBookings(vendorBookings);
-    computeMetrics(vendorBookings);
-    buildNotifications(vendorBookings);
+    // API call na — hindi na localStorage
+    bookingsApi.getMyBookings()
+      .then((res) => {
+        const vendorBookings: Booking[] = res.data.data  // note: { success, data: [...] }
+        setBookings(vendorBookings)
+        computeMetrics(vendorBookings)
+        buildNotifications(vendorBookings)
+      })
+      .catch(() => {
+        clearVendorSession()
+        navigate("/login")
+      })
   }, []);
 
   const computeMetrics = (data: Booking[]) => {
@@ -66,22 +51,16 @@ export function useDashboardViewModel() {
     weekAgo.setDate(weekAgo.getDate() - 7);
 
     setMetrics({
-      todayVolume: data.filter(
-        (b) => new Date(b.created_at).toDateString() === today,
-      ).length,
-      weeklyVelocity: data.filter((b) => new Date(b.created_at) >= weekAgo)
-        .length,
-      activeBacklog: data.filter((b) => b.status === "Pending").length,
+      todayVolume: data.filter((b) => new Date(b.created_at).toDateString() === today).length,
+      weeklyVelocity: data.filter((b) => new Date(b.created_at) >= weekAgo).length,
+      activeBacklog: data.filter((b) => b.status === "pending").length,
     });
   };
 
   const buildNotifications = (data: Booking[]) => {
     const activity: NotificationItem[] = data
-      .filter((b) => b.status === "Pending")
-      .sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      )
+      .filter((b) => b.status === "pending")
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .map((b) => ({
         id: `activity-${b.id}`,
         type: "activity" as const,
@@ -95,7 +74,6 @@ export function useDashboardViewModel() {
     setNotificationItems(activity);
   };
 
-  // Derived state — filtered bookings
   const filteredBookings = bookings
     .filter((b) => {
       const matchesSearch =
@@ -120,51 +98,42 @@ export function useDashboardViewModel() {
   };
 
   const onSelectNotification = (item: NotificationItem) => {
-    // Mark as read
     setNotificationItems((prev) =>
-      prev.map((n) => (n.id === item.id ? { ...n, read: true } : n)),
+      prev.map((n) => (n.id === item.id ? { ...n, read: true } : n))
     );
     setNotificationOpen(false);
-
-    // Open modal for selected booking
     const booking = bookings.find((b) => b.id === item.booking_id);
     if (booking) onOpenModal(booking);
   };
 
-  const onSaveStatus = () => {
+  const onSaveStatus = async () => {
     if (!selectedBooking) return;
 
     const confirmed = window.confirm(
-      `Update booking status to "${selectedStatus}"? The customer will be notified on their dashboard.`,
+      `Update booking status to "${selectedStatus}"? The customer will be notified.`
     );
     if (!confirmed) return;
 
-    // Update in localStorage
-    const allBookings: Booking[] = JSON.parse(
-      localStorage.getItem("bookings") ?? "[]",
-    );
-    const updated = allBookings.map((b) =>
-      b.id === selectedBooking.id
-        ? { ...b, status: selectedStatus, updated_at: new Date().toISOString() }
-        : b,
-    );
-    localStorage.setItem("bookings", JSON.stringify(updated));
+    try {
+      await bookingsApi.updateBookingStatus(selectedBooking.id, selectedStatus)
 
-    // Refresh state
-    const session = localStorage.getItem("session");
-    if (!session) return;
-    const parsedVendor: Vendor = JSON.parse(session);
-    const vendorBookings = updated.filter(
-      (b) => b.vendor_id === parsedVendor.id,
-    );
-    setBookings(vendorBookings);
-    computeMetrics(vendorBookings);
-    buildNotifications(vendorBookings);
-    onCloseModal();
+      // update local state — no need to re-fetch
+      const updatedBookings = bookings.map((b) =>
+        b.id === selectedBooking.id
+          ? { ...b, status: selectedStatus, updated_at: new Date().toISOString() }
+          : b
+      );
+      setBookings(updatedBookings);
+      computeMetrics(updatedBookings);
+      buildNotifications(updatedBookings);
+      onCloseModal();
+    } catch {
+      alert("Failed to update status. Please try again.");
+    }
   };
 
   const onLogout = () => {
-    localStorage.removeItem("session");
+    clearVendorSession();
     navigate("/login");
   };
 

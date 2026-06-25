@@ -17,7 +17,7 @@ export interface Booking {
   customer_phone: string
   service_requested: string
   notes: string
-  status: 'Pending' | 'Accepted' | 'Rejected'
+  status: 'pending' | 'accepted' | 'rejected'
   created_at: string
   updated_at: string
 }
