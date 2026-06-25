@@ -31,7 +31,7 @@ export function useDashboardViewModel() {
 
     setVendor(parsedVendor);
 
-    // API call na — hindi na localStorage
+    // API call 
     bookingsApi.getMyBookings()
       .then((res) => {
         const vendorBookings: Booking[] = res.data.data  // note: { success, data: [...] }
