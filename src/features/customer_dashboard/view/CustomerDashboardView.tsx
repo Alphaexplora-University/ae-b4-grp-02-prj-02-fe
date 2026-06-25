@@ -11,20 +11,20 @@ function getNotificationCopy(notification: CustomerNotification) {
 
   if (status === 'accepted') {
     return {
-      title: 'Your booking was accepted',
+      title: 'Booking Request Accepted!',
       message: `Good news! Your request for ${service} has been accepted.`,
     }
   }
 
   if (status === 'rejected') {
     return {
-      title: 'Your booking was declined',
-      message: `Sorry, your request for ${service} was declined. You may contact the vendor for more details.`,
+      title: 'Booking Request Rejected',
+      message: `Sorry, your request for ${service} was rejected. You may contact the vendor for more details.`,
     }
   }
 
   return {
-    title: 'Your booking is waiting for review',
+    title: 'Booking Request Update',
     message: `Your request for ${service} is still waiting for the vendor to review it.`,
   }
 }
@@ -89,8 +89,8 @@ export default function CustomerDashboardView() {
 
             {/* Notification Dropdown */}
             {notificationOpen && (
-              <div className="absolute right-0 top-12 w-80 bg-[#161616] border border-[#232323] rounded-2xl shadow-2xl z-50 overflow-hidden">
-                <div className="px-5 py-4 border-b border-[#232323] flex items-center justify-between">
+              <div className="absolute right-0 top-12 w-90 bg-[#161616] border border-[#232323] rounded-2xl shadow-2xl z-50 overflow-hidden">
+                <div className="px-4 py-4 border-b border-[#232323] flex items-center justify-between">
                   <p className="text-sm font-semibold text-[#f5f5f5]">Notifications</p>
                   {unreadCount > 0 && (
                     <button
@@ -103,7 +103,7 @@ export default function CustomerDashboardView() {
                   )}
                 </div>
 
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-97 overflow-y-auto">
                   {notifications.length === 0 ? (
                     <div className="px-5 py-8 text-center">
                       <p className="text-sm text-[#525252]">No notifications yet.</p>
@@ -116,7 +116,7 @@ export default function CustomerDashboardView() {
                         <div
                           key={n.id}
                           onClick={() => onMarkNotificationRead(n.id)}
-                          className={`px-5 py-4 border-b border-[#1e1e1e] cursor-pointer hover:bg-[#1e1e1e] transition-colors ${
+                          className={`px-  py-4 border-b border-[#2b2a2a] cursor-pointer hover:bg-[#1e1e1e] transition-colors ${
                             !n.read ? 'bg-[#39EF8E]/5' : ''
                           }`}
                         >
@@ -124,19 +124,26 @@ export default function CustomerDashboardView() {
                             {!n.read && (
                               <span className="mt-1.5 w-2 h-2 rounded-full bg-[#39EF8E] shrink-0" />
                             )}
-                            <div className={!n.read ? '' : 'ml-5'}>
-                              <p className="text-sm text-[#f5f5f5] font-medium">
-                                {copy.title}
-                              </p>
-                              <p className="text-xs text-[#737373] mt-1 leading-relaxed">
+                            <div className={!n.read ? '' : 'ml-5 me-3'}>
+                                <div className="flex justify-between items-baseline w-full gap-4">
+                                  <p className="text-sm text-[#f5f5f5] font-medium">
+                                    {copy.title}
+                                  </p>
+                                  <p className="text-[13px] text-[#A1A1AA] shrink-0">
+                                    {new Date(n.created_at).toLocaleTimeString([], { 
+                                      hour: '2-digit', 
+                                      minute: '2-digit' 
+                                    })}
+                                  </p>
+                                </div>
+                              
+                              <p className="text-[13px] text-[#919090] mt-1 leading-relaxed">
                                 {copy.message}
                               </p>
                               <div className="mt-2">
                                 <StatusBadge status={n.new_status} />
                               </div>
-                              <p className="text-[10px] text-[#525252] mt-1.5">
-                                {new Date(n.created_at).toLocaleString()}
-                              </p>
+                             
                             </div>
                           </div>
                         </div>
@@ -166,7 +173,7 @@ export default function CustomerDashboardView() {
           <h1 className="text-xl font-semibold text-[#f5f5f5]">
             Welcome, {customer?.name}!
           </h1>
-          <p className="text-xs text-[#666666]">
+          <p className="text-sm text-[#666666]">
             Track your booking requests and status updates.
           </p>
         </div>
@@ -175,9 +182,6 @@ export default function CustomerDashboardView() {
         <section className="space-y-4">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
-                My Bookings
-              </p>
               <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
                 Booking History
               </h2>
@@ -191,12 +195,15 @@ export default function CustomerDashboardView() {
             </button>
           </div>
 
+
+
+            {/* table */}
           <div className="overflow-hidden rounded-2xl border border-[#262626] bg-[#1b1b1b]">
             <div className="overflow-x-auto">
               <table className="w-full border-separate border-spacing-0">
                 <thead className="bg-[#181818] text-left">
                   <tr>
-                    {['Tracking Token', 'Vendor', 'Service Requested', 'Status', 'Date'].map(col => (
+                    {['Tracking Token', 'Vendor', 'Service Requested','My Notes' , 'Status', 'Date'].map(col => (
                       <th
                         key={col}
                         className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#737373] border-b border-[#262626]"
@@ -216,12 +223,20 @@ export default function CustomerDashboardView() {
                   ) : (
                     bookings.map(booking => (
                       <tr key={booking.id} className="hover:bg-[#1e1e1e] transition-colors">
-                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.tracking_token}</td>
+                        <td className="px-4  py-3 text-sm text-[#d4d4d4]">{booking.tracking_token}</td>
                         <td className="px-4 py-3 text-sm text-[#d4d4d4]">Vendor</td>
                         <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.service_requested}</td>
+                        <td className= "px-4 py-3 text-sm text-[#d4d4d4] truncate max-w-[200px] ">{booking.notes} </td>
                         <td className="px-4 py-3"><StatusBadge status={booking.status} /></td>
                         <td className="px-4 py-3 text-sm text-[#d4d4d4]">
-                          {new Date(booking.created_at).toLocaleDateString()}
+                          {new Date(booking.created_at).toLocaleDateString([], 
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            }
+                          )} 
+                          
                         </td>
                       </tr>
                     ))
@@ -233,6 +248,8 @@ export default function CustomerDashboardView() {
         </section>
       </div>
 
+
+      {/* form modal */}
       {bookingFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
@@ -282,7 +299,7 @@ export default function CustomerDashboardView() {
                 value={bookingForm.vendor_id}
                 onChange={e => onBookingFormChange('vendor_id', e.target.value)}
                 disabled={vendorsLoading || vendors.length === 0}
-                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
+                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-3 py-3 text-sm text-[#f5f5f5] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
               >
                 <option value="">
                   {vendorsLoading ? 'Loading vendors...' : 'Choose a vendor'}

@@ -31,7 +31,7 @@ export default function BookingsView() {
    
     {
       key: 'created_at',
-      label: 'Registration Timestamp',
+      label: 'Request Timestamp',
       render: (row: Booking) => new Date(row.created_at).toLocaleString(),
     },
     { key: 'customer_name', label: 'Customer Name' },
