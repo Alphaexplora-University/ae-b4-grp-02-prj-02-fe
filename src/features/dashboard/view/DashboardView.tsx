@@ -178,7 +178,7 @@ export default function DashboardView() {
             <h1 className="text-xl font-semibold text-[#f5f5f5]">
               Welcome back, {vendor?.owner_name ?? 'Vendor'}!
             </h1>
-            <p className="text-xs text-[#666666]">
+            <p className="text-sm text-[#666666]">
               Review today’s schedule, approve pending requests, and keep your vendor operations moving.
             </p>
           </div>
