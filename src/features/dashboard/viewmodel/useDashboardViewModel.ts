@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { bookingsApi } from "../../../api/bookingsApi";
 import { vendorSession } from "../../../api/session";
 import type { Booking, Vendor, NotificationItem, DashboardMetrics } from "../model/dashboard.model";
 
 export function useDashboardViewModel() {
-  const navigate = useNavigate();
-
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
@@ -125,10 +122,6 @@ export function useDashboardViewModel() {
     }
   };
 
-  const onLogout = () => {
-    navigate("/login");
-  };
-
   return {
     vendor,
     metrics,
@@ -149,6 +142,5 @@ export function useDashboardViewModel() {
     onSelectNotification,
     onStatusSelect: setSelectedStatus,
     onSaveStatus,
-    onLogout,
   };
 }

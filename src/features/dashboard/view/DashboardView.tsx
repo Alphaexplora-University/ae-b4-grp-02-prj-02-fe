@@ -31,7 +31,6 @@ export default function DashboardView() {
     onSelectNotification,
     onStatusSelect,
     onSaveStatus,
-    onLogout,
   } = useDashboardViewModel()
 
   const columns: Array<{
@@ -138,17 +137,6 @@ export default function DashboardView() {
               })}
             </nav>
           </div>
-        </div>
-
-        {/* Sign Out */}
-        <div className="px-3">
-          <button
-            type="button"
-            onClick={onLogout}
-            className="w-full px-4 py-2 text-sm font-medium text-gray-300 border border-gray-600 rounded-lg transition-colors hover:bg-red-600 hover:border-red-600 hover:text-white"
-          >
-            Sign Out
-          </button>
         </div>
       </aside>
 

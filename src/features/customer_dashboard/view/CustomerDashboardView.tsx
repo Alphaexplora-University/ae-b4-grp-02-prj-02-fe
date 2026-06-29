@@ -50,7 +50,6 @@ export default function CustomerDashboardView() {
     onToggleNotifications,
     onMarkNotificationRead,
     onMarkAllRead,
-    onLogout,
   } = useCustomerDashboardViewModel()
 
   return (
@@ -147,14 +146,6 @@ export default function CustomerDashboardView() {
               </div>
             )}
           </div>
-
-          <button
-            type="button"
-            onClick={onLogout}
-            className="px-4 py-2 text-sm font-medium text-gray-300 border border-gray-600 rounded-lg transition-colors hover:bg-red-600 hover:border-red-600 hover:text-white"
-          >
-            Sign Out
-          </button>
         </div>
       </header>
 
