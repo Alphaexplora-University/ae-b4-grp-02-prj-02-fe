@@ -31,7 +31,6 @@ export default function DashboardView() {
     onSelectNotification,
     onStatusSelect,
     onSaveStatus,
-    onLogout,
   } = useDashboardViewModel()
 
   const columns: Array<{
@@ -147,17 +146,6 @@ export default function DashboardView() {
             </nav>
           </div>
         </div>
-
-        {/* Sign Out */}
-        <div className="px-3">
-          <button
-            type="button"
-            onClick={onLogout}
-            className="w-full px-4 py-2 text-sm font-medium text-gray-300 border border-gray-600 rounded-lg transition-colors hover:bg-red-600 hover:border-red-600 hover:text-white"
-          >
-            Sign Out
-          </button>
-        </div>
       </aside>
 
       {/* MAIN CONTENT */}
@@ -191,45 +179,59 @@ export default function DashboardView() {
             </p>
           </div>
 
+          
           {/* Metrics */}
           <div className="grid grid-cols-3 gap-4">
             {[
               {
                 label: "Today's Bookings",
                 value: metrics.todayVolume,
+                accent: "#39EF8E",
                 icon: (
-                  <svg className="h-11 w-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M7 3v4M17 3v4M5 11h14v8H5z" />
                   </svg>
                 ),
               },
               {
-                label: 'Weekly Velocity',
+                label: "Weekly Velocity",
                 value: metrics.weeklyVelocity,
+                accent: "#60A5FA",
                 icon: (
-                  <svg className="h-11 w-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 12l4 4L19 6M4 20h16" />
                   </svg>
                 ),
               },
               {
-                label: 'Active Backlog',
+                label: "Active Backlog",
                 value: metrics.activeBacklog,
+                accent: "#F59E0B",
                 icon: (
-                  <svg className="h-11 w-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M7 11h10M6 15h12M9 19h6" />
                   </svg>
                 ),
               },
-            ].map(({ label, value, icon }) => (
-              <div key={label} className="relative overflow-hidden rounded-2xl border border-[#262626] bg-[#1c1c1c] p-5">
-                <div className="space-y-6 pr-14">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
+            ].map(({ label, value, icon, accent }) => (
+              <div
+                key={label}
+                className="flex items-center justify-between rounded-xl border border-[#2e2e2e] bg-[#242424] px-5 py-4"
+                style={{ borderLeft: `3px solid ${accent}` }}
+              >
+                {/* Label + Value */}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6b6b6b]">
                     {label}
                   </span>
-                  <div className="text-3xl font-semibold text-[#f5f5f5]">{value}</div>
+                  <div className="text-4xl font-bold text-[#f0f0f0]">{value}</div>
                 </div>
-                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#39EF8E]/90">
+
+                {/* Icon — right, vertically centered */}
+                <div
+                  className="flex items-center justify-center rounded-md p-2 shrink-0"
+                  style={{ backgroundColor: `${accent}20`, color: accent }}
+                >
                   {icon}
                 </div>
               </div>

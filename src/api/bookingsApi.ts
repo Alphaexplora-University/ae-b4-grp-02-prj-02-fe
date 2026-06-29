@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getVendorSession } from './session'
+import { vendorSession } from './session'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -9,11 +9,8 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const vendor = getVendorSession()
-  if (vendor) {
-    config.headers['x-vendor-id'] = vendor.id
-    config.headers['x-api-key'] = import.meta.env.VITE_API_KEY
-  }
+  config.headers['x-vendor-id'] = vendorSession.id
+  config.headers['x-api-key'] = import.meta.env.VITE_API_KEY
   return config
 })
 

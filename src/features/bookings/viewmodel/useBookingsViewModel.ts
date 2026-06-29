@@ -2,37 +2,27 @@
 // NO JSX, NO rendering
 
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import type { Booking, BookingsFilter, PaginationState } from '../model/bookings.model'
 import { DEFAULT_FILTER, DEFAULT_PAGINATION } from '../model/bookings.model'
 import type { Vendor } from '../../dashboard/model/dashboard.model'
 import { bookingsApi } from '../../../api/bookingsApi'
-import { clearVendorSession, getVendorSession } from '../../../api/session'
+import { vendorSession } from '../../../api/session'
 
 export function useBookingsViewModel() {
-  const navigate = useNavigate()
-
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [allBookings, setAllBookings] = useState<Booking[]>([])
   const [filter, setFilter] = useState<BookingsFilter>(DEFAULT_FILTER)
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGINATION)
 
   useEffect(() => {
-    const parsedVendor = getVendorSession()
-    if (!parsedVendor) {
-      navigate('/login')
-      return
-    }
-
-    setVendor(parsedVendor)
+    setVendor(vendorSession)
 
     bookingsApi.getMyBookings()
       .then(res => {
         setAllBookings(res.data.data)
       })
-      .catch(() => {
-        clearVendorSession()
-        navigate('/login')
+      .catch((error) => {
+        console.error(error)
       })
   }, [])
 
@@ -66,11 +56,6 @@ export function useBookingsViewModel() {
     setPagination(prev => ({ ...prev, currentPage: page }))
   }
 
-  const onLogout = () => {
-    clearVendorSession()
-    navigate('/login')
-  }
-
   return {
     vendor,
     bookings: paginatedBookings,
@@ -83,6 +68,5 @@ export function useBookingsViewModel() {
     onSearchChange,
     onStatusChange,
     onPageChange,
-    onLogout,
   }
 }

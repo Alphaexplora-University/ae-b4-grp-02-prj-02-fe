@@ -2,18 +2,16 @@
 // NO JSX, NO rendering
 
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { bookingsApi, vendorsApi } from '../../../api/bookingsApi'
 import type { Customer, Vendor, Booking, CustomerNotification, BookingForm } from '../model/customerDashboard.model'
 import { DEFAULT_BOOKING_FORM } from '../model/customerDashboard.model'
+import { customerSession } from '../../../api/customerSession'
 
 function normalizeStatus(status: Booking['status']) {
   return status.toLowerCase()
 }
 
 export function useCustomerDashboardViewModel() {
-  const navigate = useNavigate()
-
   const [customer, setCustomer] = useState<Customer | null>(null)
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [vendorsLoading, setVendorsLoading] = useState(true)
@@ -28,13 +26,11 @@ export function useCustomerDashboardViewModel() {
   const bookingsRef = useRef<Booking[]>([])
 
   useEffect(() => {
-    const session = localStorage.getItem('customer_session')
-    if (!session) {
-      navigate('/customer/login')
-      return
+    const parsedCustomer: Customer = {
+      id: 'customer-id-placeholder',
+      name: customerSession.customer_name,
+      email: customerSession.customer_email,
     }
-
-    const parsedCustomer: Customer = JSON.parse(session)
     setCustomer(parsedCustomer)
 
     setVendorsLoading(true)
@@ -118,7 +114,7 @@ export function useCustomerDashboardViewModel() {
     }, 2000)
 
     return () => window.clearInterval(intervalId)
-  }, [navigate])
+  }, [])
 
   const unreadCount = notifications.filter(n => !n.read).length
 
@@ -209,11 +205,6 @@ export function useCustomerDashboardViewModel() {
     }
   }
 
-  const onLogout = () => {
-    localStorage.removeItem('customer_session')
-    navigate('/customer/login')
-  }
-
   return {
     customer,
     vendors,
@@ -234,6 +225,5 @@ export function useCustomerDashboardViewModel() {
     onToggleNotifications,
     onMarkNotificationRead,
     onMarkAllRead,
-    onLogout,
   }
 }

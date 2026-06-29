@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { bookingsApi } from "../../../api/bookingsApi";
-import { clearVendorSession, getVendorSession } from "../../../api/session";
+import { vendorSession } from "../../../api/session";
 import type { Booking, Vendor, NotificationItem, DashboardMetrics } from "../model/dashboard.model";
 
 export function useDashboardViewModel() {
-  const navigate = useNavigate();
-
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
@@ -23,13 +20,7 @@ export function useDashboardViewModel() {
   });
 
   useEffect(() => {
-    const parsedVendor = getVendorSession();
-    if (!parsedVendor) {
-      navigate("/login");
-      return;
-    }
-
-    setVendor(parsedVendor);
+    setVendor(vendorSession);
 
     // API call 
     bookingsApi.getMyBookings()
@@ -39,9 +30,8 @@ export function useDashboardViewModel() {
         computeMetrics(vendorBookings)
         buildNotifications(vendorBookings)
       })
-      .catch(() => {
-        clearVendorSession()
-        navigate("/login")
+      .catch((error) => {
+        console.error(error)
       })
   }, []);
 
@@ -132,11 +122,6 @@ export function useDashboardViewModel() {
     }
   };
 
-  const onLogout = () => {
-    clearVendorSession();
-    navigate("/login");
-  };
-
   return {
     vendor,
     metrics,
@@ -157,6 +142,5 @@ export function useDashboardViewModel() {
     onSelectNotification,
     onStatusSelect: setSelectedStatus,
     onSaveStatus,
-    onLogout,
   };
 }
