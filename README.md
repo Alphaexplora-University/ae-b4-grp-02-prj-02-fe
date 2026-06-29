@@ -1,98 +1,109 @@
-# Vendor Management Frontend
+# Project
 
-A modern React + TypeScript frontend for a vendor-focused booking dashboard. The app is built around a clean dark UI, reusable shared components, and an MVVM-style structure for scalable feature development.
+This frontend is a vendor and customer booking dashboard for MVP testing. The dashboard is the default landing page, and there is no login or register flow. Vendor and customer test accounts are hardcoded.
 
-## What this frontend includes
+# Tech Stack
 
-- Login and registration flows for vendors
-- Protected dashboard and bookings routes
-- Booking metrics and recent activity views
-- Search, filtering, and pagination for bookings
-- Notification bell with unread state and booking modal updates
-- Reusable UI primitives for tables, forms, badges, and modal interactions
+- React 19.2.7
+- React DOM 19.2.7
+- React Router DOM 7.18.0
+- Tailwind CSS 4.3.1
+- Axios 1.18.1
+- TypeScript 6.0.2
+- Vite 8.1.0
 
-## Tech stack
-
-- React 19
-- TypeScript
-- Vite
-- React Router DOM
-
-
-## Project structure
+# Folder Structure
 
 ```text
 src/
+├── App.css
 ├── App.tsx
-├── main.tsx
 ├── index.css
+├── main.tsx
+├── api/
+│   ├── bookingsApi.ts
+│   ├── customerSession.ts
+│   └── session.ts
+├── assets/
+│   ├── hero.png
+│   ├── react.svg
+│   └── vite.svg
 ├── features/
-│   ├── login/
+│   ├── bookings/
 │   │   ├── model/
+│   │   │   └── bookings.model.ts
 │   │   ├── view/
+│   │   │   └── BookingsView.tsx
 │   │   └── viewmodel/
-│   ├── register/
+│   │       └── useBookingsViewModel.ts
+│   ├── customer_dashboard/
 │   │   ├── model/
+│   │   │   └── customerDashboard.model.ts
 │   │   ├── view/
+│   │   │   └── CustomerDashboardView.tsx
 │   │   └── viewmodel/
-│   ├── dashboard/
-│   │   ├── model/
-│   │   ├── view/
-│   │   └── viewmodel/
-│   └── bookings/
+│   │       └── useCustomerDashboardViewModel.ts
+│   └── dashboard/
 │       ├── model/
+│       │   └── dashboard.model.ts
 │       ├── view/
+│       │   └── DashboardView.tsx
 │       └── viewmodel/
-├── shared-components/
-│   ├── AuthGuard/
-│   ├── BookingModal/
-│   ├── DataTable/
-│   ├── FilterSelect/
-│   ├── NotificationBell/
-│   ├── Pagination/
-│   ├── SearchInput/
-│   └── StatusBadge/
+│           └── useDashboardViewModel.ts
 ├── routes/
-└── docs/
+│   └── index.tsx
+└── shared-components/
+    ├── BookingModal/
+    │   └── BookingModal.tsx
+    ├── DataTable/
+    │   └── DataTable.tsx
+    ├── FilterSelect/
+    │   └── FilterSelect.tsx
+    ├── NotificationBell/
+    │   └── NotificationBell.tsx
+    ├── Pagination/
+    │   └── Pagination.tsx
+    ├── SearchInput/
+    │   └── SearchInput.tsx
+    ├── Sidebar/
+    │   └── Sidebar.tsx
+    └── StatusBadge/
+        └── StatusBadge.tsx
 ```
 
-## Main routes
+# Routes
 
-- /login
-- /register
-- /dashboard
-- /bookings
+The following routes are defined in `App.tsx`:
 
-## Frontend architecture notes
+- `/` (Redirects to `/dashboard`)
+- `/dashboard` (Renders `DashboardView`)
+- `/bookings` (Renders `BookingsView`)
+- `/customer/dashboard` (Renders `CustomerDashboardView`)
+- `/customer-dashboard` (Renders `CustomerDashboardView`)
 
-The project follows a lightweight MVVM-style split:
+# Dependencies
 
-- View: presentational UI components under each feature's view folder
-- ViewModel: stateful logic, handlers, and derived data under each feature's viewmodel folder
-- Model: TypeScript types and default values under each feature's model folder
-- Shared components: reusable, prop-driven UI elements under src/shared-components
+### dependencies
 
-## Development workflow
+- `@tailwindcss/vite`: `^4.3.1`
+- `axios`: `^1.18.1`
+- `react`: `^19.2.7`
+- `react-dom`: `^19.2.7`
+- `react-router-dom`: `^7.18.0`
 
-Install dependencies:
+### devDependencies
 
-```bash
-npm install
-```
-
-Start the app locally:
-
-```bash
-npm run dev
-```
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-
-## Notes
-
-This frontend currently uses localStorage as a lightweight prototype data layer for rapid UI development and demo flows. The app is structured so the UI can evolve into a full API-backed experience without changing the overall feature organization.
+- `@eslint/js`: `^10.0.1`
+- `@tailwindcss/cli`: `^4.3.1`
+- `@types/node`: `^24.13.2`
+- `@types/react`: `^19.2.17`
+- `@types/react-dom`: `^19.2.3`
+- `@vitejs/plugin-react`: `^6.0.2`
+- `eslint`: `^10.5.0`
+- `eslint-plugin-react-hooks`: `^7.1.1`
+- `eslint-plugin-react-refresh`: `^0.5.3`
+- `globals`: `^17.6.0`
+- `tailwindcss`: `^4.3.1`
+- `typescript`: `~6.0.2`
+- `typescript-eslint`: `^8.61.0`
+- `vite`: `^8.1.0`
