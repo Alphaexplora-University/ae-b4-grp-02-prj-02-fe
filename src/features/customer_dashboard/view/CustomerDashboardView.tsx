@@ -65,7 +65,7 @@ export default function CustomerDashboardView() {
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-sm text-[#737373]">
+          <span className="text-sm  text-[#949494]">
             {customer?.name}
           </span>
 

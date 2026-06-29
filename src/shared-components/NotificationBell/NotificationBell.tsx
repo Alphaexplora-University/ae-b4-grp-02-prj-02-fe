@@ -58,9 +58,7 @@ export default function NotificationBell({
 
           
 
-          <div className="max-h-96 overflow-y-auto">
-
-   
+          <div className="max-h-96 overflow-y-auto">   
             {/* New Activity */}
             {activity.length > 0 && (
               <div>
@@ -72,7 +70,7 @@ export default function NotificationBell({
                     key={item.id}
                     type="button"
                     onClick={() => onSelect(item)}
-                    className={`w-full text-left px-5 py-3 flex items-start gap-3 hover:bg-[#1e1e1e] transition-colors ${
+                    className={`w-full text-left px-5 py-3 border-t border-[#232323] flex items-start gap-3 hover:bg-[#1e1e1e] transition-colors ${
                       !item.read ? 'bg-[#FFB000]/5' : ''
                     }`}
                   >
