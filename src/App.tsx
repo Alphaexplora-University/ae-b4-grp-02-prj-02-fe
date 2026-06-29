@@ -1,14 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
-import AuthGuard from './shared-components/AuthGuard/AuthGuard'
-import CustomerAuthGuard from './shared-components/AuthGuard/CustomerAuthGuard'
 
-const LoginView = lazy(() => import('./features/auth/view/LoginView'))
-const RegisterView = lazy(() => import('./features/auth/view/RegisterView'))
 const DashboardView = lazy(() => import('./features/dashboard/view/DashboardView'))
 const BookingsView = lazy(() => import('./features/bookings/view/BookingsView'))
-const CustomerLoginView = lazy(() => import('./features/customer_auth/view/CustomerLoginView'))
-const CustomerRegisterView = lazy(() => import('./features/customer_auth/view/CustomerRegisterView'))
 const CustomerDashboardView = lazy(() => import('./features/customer_dashboard/view/CustomerDashboardView'))
 
 const LoadingFallback = () => (
@@ -22,22 +16,18 @@ export default function App() {
     <BrowserRouter>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-          <Route path="/login" element={<LoginView />} />
-          <Route path="/register" element={<RegisterView />} />
-          <Route path="/dashboard" element={<AuthGuard><DashboardView /></AuthGuard>} />
-          <Route path="/bookings" element={<AuthGuard><BookingsView /></AuthGuard>} />
+          <Route path="/dashboard" element={<DashboardView />} />
+          <Route path="/bookings" element={<BookingsView />} />
 
-          <Route path="/customer/login" element={<CustomerLoginView />} />
-          <Route path="/customer/register" element={<CustomerRegisterView />} />
           <Route
             path="/customer/dashboard"
-            element={<CustomerAuthGuard><CustomerDashboardView /></CustomerAuthGuard>}
+            element={<CustomerDashboardView />}
           />
           <Route
             path="/customer-dashboard"
-            element={<CustomerAuthGuard><CustomerDashboardView /></CustomerAuthGuard>}
+            element={<CustomerDashboardView />}
           />
         </Routes>
       </Suspense>
