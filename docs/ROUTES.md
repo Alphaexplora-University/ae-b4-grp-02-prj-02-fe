@@ -1,6 +1,6 @@
-| Page            | Path       | Component                             | Feature Folder     | Auth Required |
-| --------------- | ---------- | ------------------------------------- | ------------------ | ------------- |
-| Login           | /login     | features/login/view/LoginView         | features/login     | No            |
-| Register        | /register  | features/register/view/RegisterView   | features/register  | No            |
-| Dashboard       | /dashboard | features/dashboard/view/DashboardView | features/dashboard | Yes           |
-| Master Bookings | /bookings  | features/bookings/view/BookingsView   | features/bookings  | Yes           |
+| Page                     | Path                | Component                                                | Feature Folder              | Auth Required |
+| ------------------------ | ------------------- | -------------------------------------------------------- | --------------------------- | ------------- |
+| Default Redirect         | /                   | Redirects to `/dashboard`                                | —                           | No            |
+| Vendor Dashboard         | /dashboard          | features/dashboard/view/DashboardView                    | features/dashboard          | No            |
+| Vendor Bookings        | /bookings           | features/bookings/view/BookingsView                      | features/bookings           | No            |
+| Customer Dashboard       | /customer/dashboard | features/customer_dashboard/view/CustomerDashboardView   | features/customer_dashboard | No            |
