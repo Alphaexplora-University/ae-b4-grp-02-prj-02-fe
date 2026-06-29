@@ -17,7 +17,7 @@ A modern React + TypeScript frontend for a vendor-focused booking dashboard. The
 - TypeScript
 - Vite
 - React Router DOM
-- LocalStorage-based prototype state for demo flows
+
 
 ## Project structure
 
@@ -92,13 +92,6 @@ Create a production build:
 npm run build
 ```
 
-## UI and experience highlights
-
-- Dark, high-density dashboard layout
-- Fixed-sidebar navigation shell
-- Search and status filtering for bookings
-- Modal-driven booking detail and status updates
-- Notification feed inspired by operational workflows
 
 ## Notes
 

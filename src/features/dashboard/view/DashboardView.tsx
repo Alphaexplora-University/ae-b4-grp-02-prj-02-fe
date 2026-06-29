@@ -49,7 +49,15 @@ export default function DashboardView() {
       label: 'Status',
       render: (booking: Booking) => <StatusBadge status={booking.status} />,
     },
-    { key: 'created_at', label: 'Date Created' },
+    {
+      key: 'created_at',
+      label: 'Request Date', // Optional: Tweaked label since it's no longer a full timestamp
+      render: (row: Booking) => new Date(row.created_at).toLocaleDateString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }),
+    },
     {
       key: 'id',
       label: 'Actions',

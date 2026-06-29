@@ -42,7 +42,7 @@ export default function NotificationBell({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-12 w-80 bg-[#161616] border border-[#232323] rounded-2xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 top-12 w-90 bg-[#161616] border border-[#232323] rounded-2xl shadow-2xl z-50 overflow-hidden">
 
           {/* Header */}
           <div className="px-5 py-4 border-b border-[#232323] flex items-center justify-between">
@@ -58,13 +58,13 @@ export default function NotificationBell({
 
           
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96  overflow-y-auto">
 
    
             {/* New Activity */}
             {activity.length > 0 && (
               <div>
-                <p className="px-5 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#525252] border-t border-[#232323]">
+                <p className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#636363] border-t border-[#232323]">
                   New Booking Request
                 </p>
                 {activity.map(item => (
