@@ -35,6 +35,6 @@ export const DEFAULT_FILTER: BookingsFilter = {
 export const DEFAULT_PAGINATION: PaginationState = {
   currentPage: 1,
   totalPages: 1,
-  perPage: 25,
+  perPage: 12,
   total: 0,
 }

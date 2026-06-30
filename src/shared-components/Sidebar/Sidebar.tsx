@@ -20,19 +20,19 @@ export default function Sidebar({ name, email, navItems }: SidebarProps) {
   const location = useLocation()
 
   return (
-    <aside className="w-64 shrink-0 flex flex-col py-4 px-2 select-none">
+ <aside className="w-64 shrink-0 flex flex-col py-4 px-3 select-none border-r border-[var(--border)] bg-[#FAFAF8]">
       <div className="space-y-6">
 
         {/* Profile Card */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border)]">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[var(--border)]">
           <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white font-bold text-sm shrink-0">
             {name.slice(0, 2).toUpperCase()}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-[var(--text-primary)] truncate">
+            <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
               {name}
             </span>
-            <span className="text-[12px] text-[var(--text-muted)] truncate">
+            <span className="text-[10px] text-[var(--text-muted)] truncate">
               {email}
             </span>
           </div>
@@ -51,13 +51,12 @@ export default function Sidebar({ name, email, navItems }: SidebarProps) {
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]'
-                  }`}
+                  className={`w-full flex items-center gap-3 pr-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors border-l-2 ${isActive
+                      ? 'bg-[var(--accent)]/8 text-[var(--accent)] border-[var(--accent)] pl-[10px] font-semibold'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] border-transparent pl-3'
+                    }`}
                 >
-                  <span className={isActive ? 'text-[var(--accent)]' : ''}>
+                  <span className={isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}>
                     {item.icon}
                   </span>
                   {item.label}

@@ -53,46 +53,46 @@ export default function DashboardView() {
         label: 'Actions',
         render: (booking: Booking) => (
           <button
-            type="button"
-            onClick={() => onOpenModal(booking)}
-            className="bg-[var(--accent)] text-white text-xs px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
-          >
-            View
-          </button>
+              type="button"
+              onClick={() => onOpenModal(booking)}
+              className="bg-white text-[var(--accent)] text-xs px-4 py-1.5 rounded-lg border border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+            >
+              View  
+            </button>
         ),
       },
     ]
 
   return (
     <AppLayout
-  withSidebar
-  sidebarProps={{
-    name: vendor?.owner_name ?? 'Owner',
-    email: vendor?.email ?? '',
-    navItems: [
-      {
-        label: 'Dashboard',
-        path: '/dashboard',
-        icon: (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Bookings',
-        path: '/bookings',
-        icon: (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v4M16 2v4" />
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18m-9 6 2 2 4-4" />
-          </svg>
-        ),
-      },
-    ],
-  }}
->
+      withSidebar
+      sidebarProps={{
+        name: vendor?.owner_name ?? 'Owner',
+        email: vendor?.email ?? '',
+        navItems: [
+          {
+            label: 'Dashboard',
+            path: '/dashboard',
+            icon: (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+              </svg>
+            ),
+          },
+          {
+            label: 'Bookings',
+            path: '/bookings',
+            icon: (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v4M16 2v4" />
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18m-9 6 2 2 4-4" />
+              </svg>
+            ),
+          },
+        ],
+      }}
+    >
       <PageHeader
         breadcrumbParent="Dashboard"
         breadcrumbCurrent="Overview"
@@ -188,13 +188,15 @@ export default function DashboardView() {
           />
         </div>
 
+        <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] text-white font-medium">
+          View All
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+
         {/* Table */}
-        <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)]">
-          <div className="border-b border-[var(--border)] px-6 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--text-muted)]">
-              Recent Bookings
-            </p>
-          </div>
+        <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
           <DataTable columns={columns} data={bookings} />
         </section>
 

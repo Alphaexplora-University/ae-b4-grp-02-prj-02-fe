@@ -22,7 +22,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ withSidebar = false, sidebarProps, children }: AppLayoutProps) {
   return (
-    <div className="h-screen w-screen bg-[var(--bg-page)] text-[var(--text-primary)] flex p-4 gap-4 overflow-hidden">
+    <div className="h-screen w-screen bg-[var(--bg-page)] text-[var(--text-primary)] flex overflow-hidden">
 
       {withSidebar && sidebarProps && (
         <Sidebar
@@ -32,7 +32,7 @@ export default function AppLayout({ withSidebar = false, sidebarProps, children 
         />
       )}
 
-      <main className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl flex flex-col overflow-hidden">
+      <main className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] flex flex-col overflow-hidden">
         {children}
       </main>
 

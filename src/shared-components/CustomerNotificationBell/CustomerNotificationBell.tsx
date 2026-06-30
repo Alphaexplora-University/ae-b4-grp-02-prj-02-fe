@@ -136,9 +136,12 @@ export default function CustomerNotificationBell({
                           {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      <p className="text-[13px] text-[var(--text-secondary)] mt-1 leading-relaxed">
+                      <p className="text-[13px] mb-1 text-[var(--text-secondary)] mt-1 leading-relaxed">
                         {copy.message}
                       </p>
+                      <p className="text-[10px] mt- text-[var(--text-muted)] shrink-0">
+                          {new Date(n.created_at).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </p>
                     </div>
 
                     {!n.read && (

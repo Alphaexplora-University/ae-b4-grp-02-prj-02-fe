@@ -217,6 +217,11 @@ export function useCustomerDashboardViewModel() {
       setViewModalOpen(true)
     }
   }
+  
+  const onOpenViewModal = (booking: Booking) => {
+  setSelectedBooking(booking)
+  setViewModalOpen(true)
+  }
 
   const onCloseViewModal = () => {
     setViewModalOpen(false)
@@ -247,5 +252,6 @@ export function useCustomerDashboardViewModel() {
     onMarkAllRead,
     onSelectNotification,
     onCloseViewModal,
+    onOpenViewModal,
   }
 }
