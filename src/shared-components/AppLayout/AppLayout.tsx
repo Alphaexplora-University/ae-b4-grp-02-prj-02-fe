@@ -13,9 +13,8 @@ interface NavItem {
 interface AppLayoutProps {
   withSidebar?: boolean
   sidebarProps?: {
-    name: string
-    email: string
     navItems: NavItem[]
+    roleLabel?: string
   }
   children: React.ReactNode
 }
@@ -26,13 +25,12 @@ export default function AppLayout({ withSidebar = false, sidebarProps, children 
 
       {withSidebar && sidebarProps && (
         <Sidebar
-          name={sidebarProps.name}
-          email={sidebarProps.email}
           navItems={sidebarProps.navItems}
+          roleLabel={sidebarProps.roleLabel}
         />
       )}
 
-      <main className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] flex flex-col overflow-hidden">
+      <main className="flex-1 bg-[var(--bg-surface)] flex flex-col overflow-hidden">
         {children}
       </main>
 

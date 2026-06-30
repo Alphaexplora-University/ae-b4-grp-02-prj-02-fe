@@ -1,71 +1,84 @@
 // Shared Component — sidebar navigation (vendor and customer)
 // Props only, no API calls
 
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
-  label: string
-  path: string
-  icon: React.ReactNode
+  label: string;
+  path: string;
+  icon: React.ReactNode;
 }
 
 interface SidebarProps {
-  name: string
-  email: string
-  navItems: NavItem[]
+  navItems: NavItem[];
+  roleLabel?: string;
 }
 
-export default function Sidebar({ name, email, navItems }: SidebarProps) {
-  const navigate = useNavigate()
-  const location = useLocation()
+export default function Sidebar({ navItems, roleLabel }: SidebarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
- <aside className="w-64 shrink-0 flex flex-col py-4 px-3 select-none border-r border-[var(--border)] bg-[#FAFAF8]">
+    <aside className="w-64 shrink-0 flex flex-col py-5 px-3 select-none border-r border-[#D6D9D2] bg-[var(--bg-page)]/10">
       <div className="space-y-6">
+        {/* Brand */}
+        <div className="px-3">
+          <p className="text-sm font-bold text-[var(--text-primary)] leading-tight">
+            Vendor Booking
+          </p>
 
-        {/* Profile Card */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[var(--border)]">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white font-bold text-sm shrink-0">
-            {name.slice(0, 2).toUpperCase()}
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
-              {name}
+          <p className="text-sm font-bold text-[var(--accent)] leading-tight">
+            Management System
+          </p>
+
+          {roleLabel && (
+            <span className="inline-flex mt-3 rounded-full border border-[#D6D9D2] bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#5B6154]">
+              {roleLabel}
             </span>
-            <span className="text-[10px] text-[var(--text-muted)] truncate">
-              {email}
-            </span>
-          </div>
+          )}
         </div>
+
+        {/* Divider */}
+        <div className="mx-2 border-t border-[#BFC5B5]" />
 
         {/* Navigation */}
         <div className="space-y-2">
-          <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] px-3">
+          <span className="block px-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#70776A]">
             General
           </span>
+
           <nav className="space-y-1">
-            {navItems.map(item => {
-              const isActive = location.pathname === item.path
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+
               return (
                 <button
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center gap-3 pr-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors border-l-2 ${isActive
-                      ? 'bg-[var(--accent)]/8 text-[var(--accent)] border-[var(--accent)] pl-[10px] font-semibold'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] border-transparent pl-3'
-                    }`}
+                  className={`group w-full flex items-center gap-3 rounded-r-lg py-2.5 pr-3 transition-all duration-200 border-l-[3px] ${
+                    isActive
+                      ? "bg-[var(--accent)]/12 text-[var(--accent)] border-[var(--accent)] pl-[9px] font-semibold shadow-sm"
+                      : "border-transparent pl-3 text-[#495057] hover:bg-white/70 hover:text-[#1F2937] font-medium"
+                  }`}
                 >
-                  <span className={isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}>
+                  <span
+                    className={`transition-colors ${
+                      isActive
+                        ? "text-[var(--accent)]"
+                        : "text-[#6B7280] group-hover:text-[#374151]"
+                    }`}
+                  >
                     {item.icon}
                   </span>
-                  {item.label}
+
+                  <span>{item.label}</span>
                 </button>
-              )
+              );
             })}
           </nav>
         </div>
       </div>
     </aside>
-  )
+  );
 }

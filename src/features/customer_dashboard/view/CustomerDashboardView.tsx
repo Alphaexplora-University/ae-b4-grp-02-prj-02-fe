@@ -36,7 +36,7 @@ export default function CustomerDashboardView() {
   } = useCustomerDashboardViewModel()
 
   const vendorMap = new Map(vendors.map(v => [v.id, v.business_name]))
-    
+
   const navItems = [
     {
       label: 'My Bookings',
@@ -55,14 +55,14 @@ export default function CustomerDashboardView() {
     <AppLayout
       withSidebar
       sidebarProps={{
-        name: customer?.name ?? 'Customer',
-        email: customer?.email ?? '',
         navItems,
+        roleLabel: 'Customer Portal',
       }}
     >
       <PageHeader
         breadcrumbParent="Dashboard"
         breadcrumbCurrent="My Bookings"
+        name={customer?.name ?? 'Customer'}
         rightSlot={
           <CustomerNotificationBell
             unread={unreadCount}
@@ -71,7 +71,7 @@ export default function CustomerDashboardView() {
             onToggle={onToggleNotifications}
             onSelect={onSelectNotification}
             onMarkAllRead={onMarkAllRead}
-          />       
+          />
         }
       />
 
@@ -97,7 +97,7 @@ export default function CustomerDashboardView() {
             <button
               type="button"
               onClick={onOpenBookingForm}
-              className="bg-[var(--accent)] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+              className="bg-[var(--accent)] text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
             >
               Book Vendor
             </button>
@@ -107,48 +107,57 @@ export default function CustomerDashboardView() {
           <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)]">
             <div className="overflow-x-auto">
               <table className="w-full border-separate border-spacing-0">
-                <thead className="bg-[var(--bg-page)] text-left">
+                <thead className="bg-[#3A865C] text-left">
                   <tr>
                     {['Date', 'Tracking Token', 'Vendor', 'Service Requested', 'My Notes', 'Status', 'Action'].map(col => (
                       <th
                         key={col}
-                        className="px-4 py-3 text-[12px] font-bold uppercase tracking-[0.20em] text-[var(--text-secondary)] border-b border-[var(--border)]"
+                        className="px-4 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-white border-b border-[var(--border)]"
                       >
                         {col}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border)]">
+                <tbody>
                   {bookings.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-sm text-[var(--text-muted)]">
+                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-[var(--text-muted)] border-b border-[var(--border)]">
                         No bookings yet.
                       </td>
                     </tr>
                   ) : (
                     bookings.map(booking => (
                       <tr key={booking.id} className="hover:bg-[var(--bg-card)] transition-colors">
-                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">
+                        <td className="px-4 py-3 text-sm border-b border-[var(--border)] text-[var(--text-primary)]/80 font-medium">
                           {new Date(booking.created_at).toLocaleDateString([], {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric'
                           })}
                         </td>
-                        <td className="px-3 py-3 text-sm text-[var(--text-secondary)]">{booking.tracking_token}</td>
-                        <td className="px-3 py-3 text-sm text-[var(--text-secondary)]">
-                            {vendorMap.get(booking.vendor_id) ?? 'Unknown Vendor'}
+                        <td className="px-3 py-3 text-sm border-b border-[var(--border)] text-[var(--text-primary)]/80 font-medium">
+                          {booking.tracking_token}
                         </td>
-                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">{booking.service_requested}</td>
-                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)] truncate max-w-[200px]">{booking.notes}</td>
-                        <td className="px-4 py-3"><StatusBadge status={booking.status} /></td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3 text-sm border-b border-[var(--border)] text-[var(--text-primary)] font-semibold">
+                          {vendorMap.get(booking.vendor_id) ?? 'Unknown Vendor'}
+                        </td>
+                        <td className="px-4 py-3 text-sm border-b border-[var(--border)] text-[var(--text-primary)]/80 font-medium">
+                          {booking.service_requested}
+                        </td>
+                        <td className="px-4 py-3 text-sm border-b border-[var(--border)] text-[var(--text-primary)]/80 font-medium truncate max-w-[200px]">
+                          {booking.notes}
+                        </td>
+                        <td className="px-4 py-3 border-b border-[var(--border)]">
+                          <StatusBadge status={booking.status} />
+                        </td>
+                        <td className="px-4 py-3 border-b border-[var(--border)]">
                           <button
-                              onClick={() => onOpenViewModal(booking)}
-                              className='bg-transparent text-[var(--accent)] text-sm font-semibold px-3 py-1 rounded-lg border border-[var(--accent)] hover:bg-emerald-600 hover:text-white transition-colors'>
-                              View
-                            </button>
+                            onClick={() => onOpenViewModal(booking)}
+                            className="bg-transparent text-[var(--accent)] text-sm font-semibold px-3 py-1 rounded-lg border border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+                          >
+                            View
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -158,8 +167,8 @@ export default function CustomerDashboardView() {
             </div>
           </div>
 
-    
         </section>
+
       </div>
 
       {/* View Modal */}

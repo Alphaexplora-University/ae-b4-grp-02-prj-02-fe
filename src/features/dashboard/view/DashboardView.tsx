@@ -10,6 +10,7 @@ import NotificationBell from '../../../shared-components/NotificationBell/Notifi
 import SearchInput from '../../../shared-components/SearchInput/SearchInput'
 import StatusBadge from '../../../shared-components/StatusBadge/StatusBadge'
 import type { Booking } from '../model/dashboard.model'
+import { useNavigate } from 'react-router-dom'
 
 export default function DashboardView() {
   const {
@@ -30,72 +31,83 @@ export default function DashboardView() {
     onSelectNotification,
     onStatusSelect,
     onSaveStatus,
-
   } = useDashboardViewModel()
 
-  const columns: Array<{
-    key: keyof Booking
-    label: string
-    render?: (row: Booking) => React.ReactNode
-  }> = [
-      { key: 'customer_name', label: 'Customer Name' },
-      { key: 'customer_email', label: 'Email' },
-      { key: 'customer_phone', label: 'Phone' },
-      { key: 'service_requested', label: 'Service Requested' },
-      {
-        key: 'status',
-        label: 'Status',
-        render: (booking: Booking) => <StatusBadge status={booking.status} />,
-      },
-      { key: 'created_at', label: 'Date Created' },
-      {
-        key: 'id',
-        label: 'Actions',
-        render: (booking: Booking) => (
-          <button
-              type="button"
-              onClick={() => onOpenModal(booking)}
-              className="bg-white text-[var(--accent)] text-xs px-4 py-1.5 rounded-lg border border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-            >
-              View  
-            </button>
-        ),
-      },
-    ]
+ const columns: Array<{
+  key: keyof Booking
+  label: string
+  render?: (row: Booking) => React.ReactNode
+}> = [
+    {
+      key: 'created_at',
+      label: 'Date',
+      render: (booking: Booking) =>
+        new Date(booking.created_at).toLocaleDateString([], {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        }),
+    },
+    { key: 'customer_name', label: 'Customer Name' },
+    { key: 'customer_email', label: 'Email' },
+    { key: 'customer_phone', label: 'Phone' },
+    { key: 'service_requested', label: 'Service Requested' },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (booking: Booking) => <StatusBadge status={booking.status} />,
+    },
+    {
+      key: 'id',
+      label: 'Actions',
+      render: (booking: Booking) => (
+        <button
+          type="button"
+          onClick={() => onOpenModal(booking)}
+          className="bg-white text-[var(--accent)] text-xs px-4 py-1.5 rounded-lg border border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+        >
+          View
+        </button>
+      ),
+    },
+  ]
+
+
+  const navigate = useNavigate()
 
   return (
-    <AppLayout
-      withSidebar
-      sidebarProps={{
-        name: vendor?.owner_name ?? 'Owner',
-        email: vendor?.email ?? '',
-        navItems: [
-          {
-            label: 'Dashboard',
-            path: '/dashboard',
-            icon: (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
-              </svg>
-            ),
-          },
-          {
-            label: 'Bookings',
-            path: '/bookings',
-            icon: (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v4M16 2v4" />
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18m-9 6 2 2 4-4" />
-              </svg>
-            ),
-          },
-        ],
-      }}
-    >
+  <AppLayout
+    withSidebar
+    sidebarProps={{
+      navItems: [
+        {
+          label: 'Dashboard',
+          path: '/dashboard',
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+            </svg>
+          ),
+        },
+        {
+          label: 'Bookings',
+          path: '/bookings',
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v4M16 2v4" />
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18m-9 6 2 2 4-4" />
+            </svg>
+          ),
+        },
+      ],
+      roleLabel: 'Vendor Portal',
+    }}
+  >
       <PageHeader
         breadcrumbParent="Dashboard"
         breadcrumbCurrent="Overview"
+        name={vendor?.owner_name ?? 'Owner'}
         rightSlot={
           <NotificationBell
             unread={unreadCount}
@@ -121,7 +133,7 @@ export default function DashboardView() {
         </div>
 
         {/* Metrics */}
-        <div className="grid grid-cols-3  gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {[
             {
               label: "Today's Bookings",
@@ -188,12 +200,21 @@ export default function DashboardView() {
           />
         </div>
 
-        <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] text-white font-medium">
+        <div className="flex items-center justify-between">
+  <h2 className="text-lg font-semibold text-[#444444]">
+    Recent Bookings
+        </h2>
+        <button
+          type="button"
+          onClick={() => navigate('/bookings')}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#3A865C] text-white font-medium text-sm hover:opacity-90 transition-opacity"
+        >
           View All
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </button>
+      </div>
 
         {/* Table */}
         <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">

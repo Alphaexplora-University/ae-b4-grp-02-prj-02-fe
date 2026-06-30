@@ -14,7 +14,7 @@ export default function SearchInput({ value, placeholder, onChange }: SearchInpu
         className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="3"
         viewBox="0 0 24 24"
       >
         <circle cx="11" cy="11" r="8" />
@@ -25,7 +25,7 @@ export default function SearchInput({ value, placeholder, onChange }: SearchInpu
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder ?? 'Search...'}
-        className="w-full bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors"
+        className="w-full bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 transition-colors"
       />
     </div>
   )
