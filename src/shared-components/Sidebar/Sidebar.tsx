@@ -20,7 +20,7 @@ export default function Sidebar({ navItems, roleLabel }: SidebarProps) {
 
   return (
     <aside className="w-64 shrink-0 flex flex-col py-5 px-3 select-none border-r border-[#D6D9D2] bg-[var(--bg-page)]/10">
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Brand */}
         <div className="px-3">
           <p className="text-sm font-bold text-[var(--text-primary)] leading-tight">
@@ -39,7 +39,7 @@ export default function Sidebar({ navItems, roleLabel }: SidebarProps) {
         </div>
 
         {/* Divider */}
-        <div className="mx-2 border-t border-[#BFC5B5]" />
+        <div className="mx- border-t border-[#BFC5B5]" />
 
         {/* Navigation */}
         <div className="space-y-2">

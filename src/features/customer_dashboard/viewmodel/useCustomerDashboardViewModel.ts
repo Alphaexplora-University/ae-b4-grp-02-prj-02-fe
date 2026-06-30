@@ -27,6 +27,20 @@ export function useCustomerDashboardViewModel() {
   const [viewModalOpen, setViewModalOpen] = useState(false)
   const bookingsRef = useRef<Booking[]>([])
 
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const rowsPerPage = 15
+
+  const totalPages = Math.max(1, Math.ceil(bookings.length / rowsPerPage))
+  const paginatedBookings = bookings.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  )
+
+  const onNextPage = () => setCurrentPage(p => Math.min(p + 1, totalPages))
+  const onPrevPage = () => setCurrentPage(p => Math.max(p - 1, 1))
+
   useEffect(() => {
     const parsedCustomer: Customer = {
       id: 'customer-id-placeholder',
@@ -217,7 +231,7 @@ export function useCustomerDashboardViewModel() {
       setViewModalOpen(true)
     }
   }
-  
+
   const onOpenViewModal = (booking: Booking) => {
   setSelectedBooking(booking)
   setViewModalOpen(true)
@@ -229,6 +243,11 @@ export function useCustomerDashboardViewModel() {
   }
 
   return {
+  bookings: paginatedBookings,   // table now receives only the current page
+  currentPage,
+  totalPages,
+  onNextPage,
+  onPrevPage,
     customer,
     vendors,
     vendorsLoading,
