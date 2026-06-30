@@ -13,7 +13,6 @@ export interface Vendor {
   owner_name?: string
   email?: string
 }
-
 export interface Booking {
   id: string
   tracking_token: string
@@ -24,7 +23,7 @@ export interface Booking {
   customer_phone: string
   service_requested: string
   notes: string
-  status: 'pending' | 'accepted' | 'rejected' | 'Pending' | 'Accepted' | 'Rejected'
+  status: 'pending' | 'accepted' | 'rejected'   // ← removed capitalized variants
   created_at: string
   updated_at: string
 }

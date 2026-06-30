@@ -23,6 +23,8 @@ export function useCustomerDashboardViewModel() {
   const [bookingForm, setBookingForm] = useState<BookingForm>(DEFAULT_BOOKING_FORM)
   const [formError, setFormError] = useState('')
   const [formSuccess, setFormSuccess] = useState('')
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [viewModalOpen, setViewModalOpen] = useState(false)
   const bookingsRef = useRef<Booking[]>([])
 
   useEffect(() => {
@@ -205,6 +207,22 @@ export function useCustomerDashboardViewModel() {
     }
   }
 
+  const onSelectNotification = (notification: CustomerNotification) => {
+    onMarkNotificationRead(notification.id)
+    setNotificationOpen(false)
+
+    const booking = bookings.find(b => b.id === notification.booking_id)
+    if (booking) {
+      setSelectedBooking(booking)
+      setViewModalOpen(true)
+    }
+  }
+
+  const onCloseViewModal = () => {
+    setViewModalOpen(false)
+    setSelectedBooking(null)
+  }
+
   return {
     customer,
     vendors,
@@ -218,6 +236,8 @@ export function useCustomerDashboardViewModel() {
     bookingForm,
     formError,
     formSuccess,
+    selectedBooking,
+    viewModalOpen,
     onOpenBookingForm,
     onCloseBookingForm,
     onBookingFormChange,
@@ -225,5 +245,7 @@ export function useCustomerDashboardViewModel() {
     onToggleNotifications,
     onMarkNotificationRead,
     onMarkAllRead,
+    onSelectNotification,
+    onCloseViewModal,
   }
 }

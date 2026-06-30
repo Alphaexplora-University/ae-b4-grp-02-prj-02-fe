@@ -2,32 +2,11 @@
 // NO useState, NO useEffect, NO API calls
 
 import { useCustomerDashboardViewModel } from '../viewmodel/useCustomerDashboardViewModel'
+import AppLayout from '../../../shared-components/AppLayout/AppLayout'
+import PageHeader from '../../../shared-components/PageHeader/PageHeader'
+import CustomerNotificationBell from '../../../shared-components/CustomerNotificationBell/CustomerNotificationBell'
+import BookingViewModal from '../../../shared-components/BookingViewModal/BookingViewModal'
 import StatusBadge from '../../../shared-components/StatusBadge/StatusBadge'
-import type { CustomerNotification } from '../model/customerDashboard.model'
-
-function getNotificationCopy(notification: CustomerNotification) {
-  const service = notification.service_requested
-  const status = notification.new_status.toLowerCase()
-
-  if (status === 'accepted') {
-    return {
-      title: 'Booking Request Accepted!',
-      message: `Good news! Your request for ${service} has been accepted.`,
-    }
-  }
-
-  if (status === 'rejected') {
-    return {
-      title: 'Booking Request Rejected',
-      message: `Sorry, your request for ${service} was rejected. You may contact the vendor for more details.`,
-    }
-  }
-
-  return {
-    title: 'Booking Request Update',
-    message: `Your request for ${service} is still waiting for the vendor to review it.`,
-  }
-}
 
 export default function CustomerDashboardView() {
   const {
@@ -43,128 +22,65 @@ export default function CustomerDashboardView() {
     bookingForm,
     formError,
     formSuccess,
+    selectedBooking,
+    viewModalOpen,
     onOpenBookingForm,
     onCloseBookingForm,
     onBookingFormChange,
     onSubmitBooking,
     onToggleNotifications,
-    onMarkNotificationRead,
     onMarkAllRead,
+    onSelectNotification,
+    onCloseViewModal,
   } = useCustomerDashboardViewModel()
 
+  const navItems = [
+    {
+      label: 'My Bookings',
+      path: '/customer/dashboard',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 2v4M16 2v4" />
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18m-9 6 2 2 4-4" />
+        </svg>
+      ),
+    },
+  ]
+
   return (
-    <div className="h-screen w-screen bg-[#0A0A0A] text-[#a3a3a3] flex flex-col overflow-hidden">
-
-      {/* TOP NAVBAR */}
-      <header className="h-14 bg-[#111111] border-b border-[#232323] flex items-center justify-between px-8 shrink-0">
-        <div className="flex items-center gap-3">
-          <p className="text-[#39EF8E] text-xs uppercase tracking-[0.3em] font-semibold">
-            Customer Portal
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <span className="text-sm  text-[#949494]">
-            {customer?.name}
-          </span>
-
-          {/* Notification Bell */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={onToggleNotifications}
-              className="relative bg-[#1e1e1e] border border-[#2d2d2d] hover:border-[#3d3d3d] text-[#a3a3a3] hover:text-[#e5e5e5] p-2.5 rounded-xl transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 17a2 2 0 0 0 4 0" />
-              </svg>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#39EF8E] text-[#071208] text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Notification Dropdown */}
-            {notificationOpen && (
-              <div className="absolute right-0 top-12 w-90 bg-[#161616] border border-[#232323] rounded-2xl shadow-2xl z-50 overflow-hidden">
-                <div className="px-4 py-4 border-b border-[#232323] flex items-center justify-between">
-                  <p className="text-sm font-semibold text-[#f5f5f5]">Notifications</p>
-                  {unreadCount > 0 && (
-                    <button
-                      type="button"
-                      onClick={onMarkAllRead}
-                      className="text-[10px] text-[#39EF8E] hover:underline"
-                    >
-                      Mark all as read
-                    </button>
-                  )}
-                </div>
-
-                <div className="max-h-97 overflow-y-auto">
-                  {notifications.length === 0 ? (
-                    <div className="px-5 py-8 text-center">
-                      <p className="text-sm text-[#525252]">No notifications yet.</p>
-                    </div>
-                  ) : (
-                    notifications.map(n => {
-                      const copy = getNotificationCopy(n)
-
-                      return (
-                        <div
-                          key={n.id}
-                          onClick={() => onMarkNotificationRead(n.id)}
-                          className={`px-  py-4 border-b border-[#2b2a2a] cursor-pointer hover:bg-[#1e1e1e] transition-colors ${
-                            !n.read ? 'bg-[#39EF8E]/5' : ''
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
-                            {!n.read && (
-                              <span className="mt-1.5 w-2 h-2 rounded-full bg-[#39EF8E] shrink-0" />
-                            )}
-                            <div className={!n.read ? '' : 'ml-5 me-3'}>
-                                <div className="flex justify-between items-baseline w-full gap-4">
-                                  <p className="text-sm text-[#f5f5f5] font-medium">
-                                    {copy.title}
-                                  </p>
-                                  <p className="text-[13px] text-[#A1A1AA] shrink-0">
-                                    {new Date(n.created_at).toLocaleTimeString([], { 
-                                      hour: '2-digit', 
-                                      minute: '2-digit' 
-                                    })}
-                                  </p>
-                                </div>
-                              
-                              <p className="text-[13px] text-[#919090] mt-1 leading-relaxed">
-                                {copy.message}
-                              </p>
-                              <div className="mt-2">
-                                <StatusBadge status={n.new_status} />
-                              </div>
-                             
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+    <AppLayout
+      withSidebar
+      sidebarProps={{
+        name: customer?.name ?? 'Customer',
+        email: customer?.email ?? '',
+        navItems,
+      }}
+    >
+      <PageHeader
+        breadcrumbParent="Customer"
+        breadcrumbCurrent="My Bookings"
+        rightSlot={
+          <CustomerNotificationBell
+            unread={unreadCount}
+            open={notificationOpen}
+            items={notifications}
+            onToggle={onToggleNotifications}
+            onSelect={onSelectNotification}
+            onMarkAllRead={onMarkAllRead}
+          />
+        }
+      />
 
       {/* MAIN CONTENT */}
       <div className="flex-1 overflow-y-auto p-8 space-y-8">
 
         {/* Welcome */}
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-[#f5f5f5]">
+          <h1 className="text-xl font-semibold text-[var(--text-primary)]">
             Welcome, {customer?.name}!
           </h1>
-          <p className="text-sm text-[#666666]">
+          <p className="text-sm text-[var(--text-secondary)]">
             Track your booking requests and status updates.
           </p>
         </div>
@@ -172,62 +88,55 @@ export default function CustomerDashboardView() {
         {/* My Bookings */}
         <section className="space-y-4">
           <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
-                Booking History
-              </h2>
-            </div>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              Booking History
+            </h2>
             <button
               type="button"
               onClick={onOpenBookingForm}
-              className="bg-[#39EF8E] text-[#071208] text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+              className="bg-[var(--accent)] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
             >
               Book Vendor
             </button>
           </div>
 
-
-
-            {/* table */}
-          <div className="overflow-hidden rounded-2xl border border-[#262626] bg-[#1b1b1b]">
+          {/* table */}
+          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)]">
             <div className="overflow-x-auto">
               <table className="w-full border-separate border-spacing-0">
-                <thead className="bg-[#181818] text-left">
+                <thead className="bg-[var(--bg-card)] text-left">
                   <tr>
-                    {['Tracking Token', 'Vendor', 'Service Requested','My Notes' , 'Status', 'Date'].map(col => (
+                    {['Tracking Token', 'Vendor', 'Service Requested', 'My Notes', 'Status', 'Date'].map(col => (
                       <th
                         key={col}
-                        className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#737373] border-b border-[#262626]"
+                        className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--text-muted)] border-b border-[var(--border)]"
                       >
                         {col}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#242424]">
+                <tbody className="divide-y divide-[var(--border)]">
                   {bookings.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-12 text-center text-sm text-[#525252]">
+                      <td colSpan={6} className="px-4 py-12 text-center text-sm text-[var(--text-muted)]">
                         No bookings yet.
                       </td>
                     </tr>
                   ) : (
                     bookings.map(booking => (
-                      <tr key={booking.id} className="hover:bg-[#1e1e1e] transition-colors">
-                        <td className="px-4  py-3 text-sm text-[#d4d4d4]">{booking.tracking_token}</td>
-                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">Vendor</td>
-                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">{booking.service_requested}</td>
-                        <td className= "px-4 py-3 text-sm text-[#d4d4d4] truncate max-w-[200px] ">{booking.notes} </td>
+                      <tr key={booking.id} className="hover:bg-[var(--bg-card)] transition-colors">
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">{booking.tracking_token}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">Vendor</td>
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">{booking.service_requested}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)] truncate max-w-[200px]">{booking.notes}</td>
                         <td className="px-4 py-3"><StatusBadge status={booking.status} /></td>
-                        <td className="px-4 py-3 text-sm text-[#d4d4d4]">
-                          {new Date(booking.created_at).toLocaleDateString([], 
-                            {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            }
-                          )} 
-                          
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">
+                          {new Date(booking.created_at).toLocaleDateString([], {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
                         </td>
                       </tr>
                     ))
@@ -236,31 +145,39 @@ export default function CustomerDashboardView() {
               </table>
             </div>
           </div>
+
+    
         </section>
       </div>
 
+      {/* View Modal */}
+      <BookingViewModal
+        booking={selectedBooking}
+        open={viewModalOpen}
+        onClose={onCloseViewModal}
+      />
 
-      {/* form modal */}
+      {/* Booking Form Modal */}
       {bookingFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={onCloseBookingForm}
           />
-          <div className="relative z-10 w-full max-w-lg bg-[#161616] border border-[#232323] rounded-2xl p-8 space-y-5 shadow-2xl">
+          <div className="relative z-10 w-full max-w-lg bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-8 space-y-5 shadow-2xl">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#737373]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--text-muted)]">
                   New Booking
                 </p>
-                <h2 className="text-lg font-semibold text-[#f5f5f5] mt-1">
+                <h2 className="text-lg font-semibold text-[var(--text-primary)] mt-1">
                   Book Vendor
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={onCloseBookingForm}
-                className="text-[#525252] hover:text-[#f5f5f5] transition-colors"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -268,29 +185,29 @@ export default function CustomerDashboardView() {
               </button>
             </div>
 
-            <div className="border-t border-[#232323]" />
+            <div className="border-t border-[var(--border)]" />
 
             {formError && (
-              <div className="bg-red-950/50 border border-red-800/50 rounded-lg px-4 py-3">
-                <p className="text-red-400 text-sm">{formError}</p>
+              <div className="bg-[#FFD1D1]/40 border border-[#E89292] rounded-lg px-4 py-3">
+                <p className="text-[#A82A2A] text-sm">{formError}</p>
               </div>
             )}
 
             {formSuccess && (
-              <div className="bg-green-950/50 border border-green-800/50 rounded-lg px-4 py-3">
-                <p className="text-[#39EF8E] text-sm">{formSuccess}</p>
+              <div className="bg-[#E5F5EC] border border-[#7FCBA3] rounded-lg px-4 py-3">
+                <p className="text-[#1F7A4D] text-sm">{formSuccess}</p>
               </div>
             )}
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
+              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Vendor
               </label>
               <select
                 value={bookingForm.vendor_id}
                 onChange={e => onBookingFormChange('vendor_id', e.target.value)}
                 disabled={vendorsLoading || vendors.length === 0}
-                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-3 py-3 text-sm text-[#f5f5f5] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-3 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors"
               >
                 <option value="">
                   {vendorsLoading ? 'Loading vendors...' : 'Choose a vendor'}
@@ -302,15 +219,15 @@ export default function CustomerDashboardView() {
                 ))}
               </select>
               {vendorsError && (
-                <p className="text-xs text-red-400">{vendorsError}</p>
+                <p className="text-xs text-[#A82A2A]">{vendorsError}</p>
               )}
               {!vendorsLoading && !vendorsError && vendors.length === 0 && (
-                <p className="text-xs text-[#737373]">No vendors are available yet.</p>
+                <p className="text-xs text-[var(--text-muted)]">No vendors are available yet.</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
+              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Service Requested
               </label>
               <input
@@ -318,12 +235,12 @@ export default function CustomerDashboardView() {
                 value={bookingForm.service_requested}
                 onChange={e => onBookingFormChange('service_requested', e.target.value)}
                 placeholder="e.g. Wedding photography"
-                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] placeholder-[#404040] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
+              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Contact Number
               </label>
               <input
@@ -331,12 +248,12 @@ export default function CustomerDashboardView() {
                 value={bookingForm.customer_phone}
                 onChange={e => onBookingFormChange('customer_phone', e.target.value)}
                 placeholder="09171234567"
-                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] placeholder-[#404040] focus:outline-none focus:border-[#39EF8E]/50 transition-colors"
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#737373] uppercase tracking-wider">
+              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Notes
               </label>
               <textarea
@@ -344,7 +261,7 @@ export default function CustomerDashboardView() {
                 onChange={e => onBookingFormChange('notes', e.target.value)}
                 placeholder="Optional details for the vendor"
                 rows={3}
-                className="w-full bg-[#1e1e1e] border border-[#2d2d2d] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] placeholder-[#404040] focus:outline-none focus:border-[#39EF8E]/50 transition-colors resize-none"
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors resize-none"
               />
             </div>
 
@@ -352,14 +269,14 @@ export default function CustomerDashboardView() {
               <button
                 type="button"
                 onClick={onCloseBookingForm}
-                className="flex-1 bg-[#1e1e1e] border border-[#2d2d2d] text-[#a3a3a3] text-sm font-medium py-2.5 rounded-xl hover:text-[#f5f5f5] transition-colors"
+                className="flex-1 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] text-sm font-medium py-2.5 rounded-xl hover:text-[var(--text-primary)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={onSubmitBooking}
-                className="flex-1 bg-[#39EF8E] text-[#071208] text-sm font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                className="flex-1 bg-[var(--accent)] text-white text-sm font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity"
               >
                 Submit Booking
               </button>
@@ -367,6 +284,6 @@ export default function CustomerDashboardView() {
           </div>
         </div>
       )}
-    </div>
+    </AppLayout>
   )
 }
