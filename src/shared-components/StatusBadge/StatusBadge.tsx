@@ -8,15 +8,16 @@ interface StatusBadgeProps {
 export default function StatusBadge({ status }: StatusBadgeProps) {
   const normalized = status.toLowerCase() as 'pending' | 'accepted' | 'rejected'
   const styles = {
-    pending: 'bg-yellow-950/50 text-yellow-400 border border-yellow-800/50',
-    accepted: 'bg-green-950/50 text-[#39EF8E] border border-green-800/50',
-    rejected: 'bg-red-950/50 text-red-400 border border-red-800/50',
+    pending: 'bg-[#FEF4D7] text-[#92710C] border border-[#E8C95F]',
+    accepted: 'bg-[#E5F5EC] text-[#1F7A4D] border border-[#7FCBA3]',
+    rejected: 'bg-[#FFD1D1] text-[#A82A2A] border border-[#E89292]',
   }
   const label = normalized.charAt(0).toUpperCase() + normalized.slice(1)
 
   return (
-    <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium ${styles[normalized]}`}>
+    <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold ${styles[normalized]}`}>
       {label}
     </span>
   )
 }
+

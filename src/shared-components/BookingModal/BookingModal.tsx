@@ -27,21 +27,21 @@ export default function BookingModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-xl bg-[#161616] border border-[#232323] rounded-3xl shadow-2xl overflow-hidden">
+      <div className="relative z-10 w-full max-w-xl bg-[#FEFEFE] border border-[#E5E5E5] rounded-3xl shadow-2xl overflow-hidden">
         {/* Header Section */}
         <div className="px-8 pt-6 pb-4">
-          <h2 className="text-sm font-medium text-[#949292] tracking-wide uppercase">
+          <h2 className="text-sm font-medium text-[#6B6E70] tracking-wide uppercase">
             booking information
           </h2>
         </div>
 
         {/* Top Divider line running edge-to-edge */}
-        <div className="border-t border-[#2B2B2B]" />
+        <div className="border-t border-[#E5E5E5]" />
 
         {/* Content Body */}
         <div className="p-7 space-y-6">
@@ -51,13 +51,13 @@ export default function BookingModal({
               Customer information
             </label>
 
-            <div className="bg-[#171717] border border-[#262626] rounded-xl p-4 space-y-4">
+            <div className="bg-[#F9FAFB] border border-[#E5E5E5] rounded-xl p-4 space-y-4">
               {/* Tracking Token (Stacked to accommodate long UUID strings safely) */}
-              <div className="flex flex-col gap-1 pb-3 border-b border-[#262626]/60">
+              <div className="flex flex-col gap-1 pb-3 border-b border-[#E5E5E5]">
                 <span className="text-[13px] font-medium text-[#8a8a8a]">
                   Tracking Token
                 </span>
-                <span className="text-sm font-mono text-[#d4d4d4] select-all break-all">
+                <span className="text-sm font-mono text-[#252728] select-all break-all">
                   {booking.tracking_token}
                 </span>
               </div>
@@ -67,16 +67,16 @@ export default function BookingModal({
                 <span className="text-[13px] font-medium text-[#8a8a8a]">
                   Customer Name
                 </span>
-                <span className="text-[16px] text-[#f5f5f5] font-semibold">
+                <span className="text-[16px] text-[#252728] font-semibold">
                   {booking.customer_name}
                 </span>
               </div>
 
               {/* Contact Metadata Row & Current Status Badge */}
-              <div className="pt-3 border-t border-[#262626]/60 flex justify-between items-center gap-4">
-                <div className="flex items-center gap-2 text-[14px] text-[#a1a1aa]">
+              <div className="pt-3 border-t border-[#E5E5E5] flex justify-between items-center gap-4">
+                <div className="flex items-center gap-2 text-[14px] text-[#5B5D5E]">
                   <span>{booking.customer_email}</span>
-                  <span className="text-[#404040] select-none">•</span>
+                  <span className="text-[#C4C4C4] select-none">•</span>
                   <span>{booking.customer_phone}</span>
                 </div>
                 <div className="shrink-0">
@@ -92,21 +92,21 @@ export default function BookingModal({
               Service Details
             </label>
 
-            <div className="bg-[#171717] border border-[#262626] rounded-xl p-4 space-y-3">
+            <div className="bg-[#F9FAFB] border border-[#E5E5E5] rounded-xl p-4 space-y-3">
               <div className="flex flex-col gap-1">
                 <span className="text-[13px] font-medium text-[#8a8a8a]">
                   Service Requested
                 </span>
-                <span className="text-[15px] text-[#f5f5f5] font-medium">
+                <span className="text-[15px] text-[#252728] font-medium">
                   {booking.service_requested}
                 </span>
               </div>
 
-              <div className="flex flex-col gap-1 pt-2.5 border-t border-[#262626]/60">
+              <div className="flex flex-col gap-1 pt-2.5 border-t border-[#E5E5E5]">
                 <span className="text-[13px] font-medium text-[#8a8a8a]">
                   Notes
                 </span>
-                <p className="text-sm text-[#a1a1aa] leading-relaxed whitespace-pre-wrap">
+                <p className="text-sm text-[#5B5D5E] leading-relaxed whitespace-pre-wrap">
                   {booking.notes || "—"}
                 </p>
               </div>
@@ -127,11 +127,11 @@ export default function BookingModal({
                     e.target.value as "pending" | "accepted" | "rejected",
                   )
                 }
-                className="w-full bg-[#171717] border border-[#262626] rounded-xl px-4 py-3 text-sm text-[#f5f5f5] focus:outline-none focus:border-[#39EF8E]/40 transition-colors cursor-pointer appearance-none"
+                className="w-full bg-[#F9FAFB] border border-[#E5E5E5] rounded-xl px-4 py-3 text-sm text-[#252728] focus:outline-none focus:border-[#349E64]/50 transition-colors cursor-pointer appearance-none"
               >
                 <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
+                <option value="accepted">Accept</option>
+                <option value="rejected">Reject</option>
               </select>
 
               {/* Custom Chevron Arrow */}
@@ -148,8 +148,8 @@ export default function BookingModal({
           </div>
 
           {/* SECTION 4: SYSTEM ALERT BOX */}
-          <div className="border border-yellow-600/30 bg-yellow-500/[0.04] rounded-xl px-4 py-3.5">
-            <p className="text-yellow-500/90 text-[13px] leading-relaxed flex gap-2.5 items-start">
+          <div className="border border-yellow-500/40 bg-yellow-400/10 rounded-xl px-4 py-3.5">
+            <p className="text-yellow-700 text-[13px] leading-relaxed flex gap-2.5 items-start">
               <span className="shrink-0 text-sm leading-none">⚠️</span>
               <span>
                 Updating booking status automatically sends a real-time
@@ -160,21 +160,21 @@ export default function BookingModal({
         </div>
 
         {/* Bottom Divider line running edge-to-edge */}
-        <div className="border-t border-[#232323]" />
+        <div className="border-t border-[#E5E5E5]" />
 
         {/* Footer Actions — Aligned Right */}
-        <div className="px-8 py-5 bg-[#131313]/50 flex justify-end gap-3">
+        <div className="px-8 py-5 bg-[#F9FAFB]/70 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 text-sm font-medium text-[#a3a3a3] bg-transparent border border-[#2d2d2d] rounded-xl hover:text-[#f5f5f5] hover:bg-[#1e1e1e] transition-all min-w-[100px]"
+            className="px-6 py-2.5 text-sm font-medium text-[#525252] bg-transparent border border-[#D4D4D4] rounded-xl hover:text-[#252728] hover:bg-[#F0F0F0] transition-all min-w-[100px]"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onSave}
-            className="px-6 py-2.5 text-sm font-semibold text-[#071208] bg-[#39EF8E] rounded-xl hover:opacity-90 transition-opacity min-w-[120px]"
+            className="px-6 py-2.5 text-sm font-semibold text-[#FEFEFE] bg-[#349E64] rounded-xl hover:opacity-90 transition-opacity min-w-[120px]"
           >
             Update
           </button>

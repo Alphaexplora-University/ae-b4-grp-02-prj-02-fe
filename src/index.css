@@ -1,17 +1,44 @@
 @import "tailwindcss";
 
-/* *, *::before, *::after {
-  margin: 0px;
-  padding: 0px;
+:root {
+  --bg-page: #f8f8f8;
+  --bg-surface: #fefefe;
+  --bg-card: #F8F8F8;
+  --text-primary: #252728;
+  --text-header: #ffffff; 
+  --text-secondary: #6B7280;
+  --text-muted: #838586;
+  --border: #E5E7EB;
+  --accent: #349E64;
+  --accent-text: #FFFFFF;
+
+  --card-volume: #FEF4D7;
+  --card-volume-text: #92710C;
+  --card-velocity: #EAEFFE;
+  --card-velocity-text: #3548A8;
+  --card-backlog: #FFD1D1;
+  --card-backlog-text: #A82A2A;
+}
+
+/* text header for thead */
+
+/* *,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 } */
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: #121212;
-  color: #a3a3a3;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
