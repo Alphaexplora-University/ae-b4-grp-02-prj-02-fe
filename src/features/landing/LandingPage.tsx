@@ -24,10 +24,10 @@ export default function LandingPage(): JSX.Element {
                             to the minute.
                         </h1>
                         <p className="dk-sub">
-                            VBMS helps photographers, caterers, and service vendors manage every booking request — from the first inquiry all the way to confirmation.
+                           Manage every booking request — fast, simple, and organized.
                         </p>
-                        <p className="dk-sub" style={{ fontSize: '13px', marginTop: '10px', opacity: 0.6 }}>
-                            This is a demo — click below to explore the vendor or customer portal without signing in.
+                        <p className="dk-sub" style={{ fontSize: '14px', marginTop: '10px', opacity: 0.8 }}>
+                            Explore the vendor or customer portal without signing in.
                         </p>
 
                         <div className="dk-ticket" role="group" aria-label="Choose how you'll use VBMS">
