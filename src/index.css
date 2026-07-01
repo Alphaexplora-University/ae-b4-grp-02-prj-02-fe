@@ -12,11 +12,11 @@
   --accent: #349E64;
   --accent-text: #FFFFFF;
 
-  --card-volume: #FEF4D7;
+  --card-volume: #fff1c7;
   --card-volume-text: #92710C;
-  --card-velocity: #EAEFFE;
+  --card-velocity: #dae3ff;
   --card-velocity-text: #3548A8;
-  --card-backlog: #FFD1D1;
+  --card-backlog: #ffc4c4;
   --card-backlog-text: #A82A2A;
 }
 
@@ -35,7 +35,7 @@ body,
 #root {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+ 
   background-color: var(--bg-page);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
