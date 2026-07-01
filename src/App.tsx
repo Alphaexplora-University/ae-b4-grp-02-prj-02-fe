@@ -30,10 +30,9 @@ export default function App() {
             path="/customer-dashboard"
             element={<CustomerDashboardView />}
           />
-        </Routes>
-
 
           <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Suspense>
     </BrowserRouter>
   )
