@@ -31,6 +31,9 @@ export default function App() {
             element={<CustomerDashboardView />}
           />
         </Routes>
+
+
+          <Route path="*" element={<Navigate to="/" replace />} />
       </Suspense>
     </BrowserRouter>
   )
