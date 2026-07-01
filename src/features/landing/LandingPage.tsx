@@ -69,7 +69,7 @@ export default function LandingPage(): JSX.Element {
                                         <p>Review today's schedule and keep things moving.</p>
                                     </div>
                                     <div className="dk-mock-metrics">
-                                        <div className="dk-mock-card dk-today">9
+                                        <div className="dk-mock-card dk-today">
                                             <div className="dk-label">Today's Bookings</div>
                                             <div className="dk-num">1</div>
                                         </div>
