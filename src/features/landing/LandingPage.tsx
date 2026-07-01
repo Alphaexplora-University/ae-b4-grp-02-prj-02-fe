@@ -24,12 +24,14 @@ export default function LandingPage(): JSX.Element {
                             to the minute.
                         </h1>
                         <p className="dk-sub">
-                            VBMS keeps photographers, caterers, and DJs on schedule — from the
-                            first inquiry to a confirmed date on the calendar.
+                            VBMS helps photographers, caterers, and service vendors manage every booking request — from the first inquiry all the way to confirmation.
+                        </p>
+                        <p className="dk-sub" style={{ fontSize: '13px', marginTop: '10px', opacity: 0.6 }}>
+                            This is a demo — click below to explore the vendor or customer portal without signing in.
                         </p>
 
                         <div className="dk-ticket" role="group" aria-label="Choose how you'll use VBMS">
-                            <Link to="/customer/dashboard" className="dk-ticket-side">
+                            <Link to="/customer/dashboard" target='_blank' className="dk-ticket-side">
                                 <span className="dk-role mono">I'm booking someone</span>
                                 <span className="dk-action">
                                     Find a vendor
@@ -39,7 +41,7 @@ export default function LandingPage(): JSX.Element {
                                 </span>
                             </Link>
                             <div className="dk-ticket-divider" />
-                            <Link to="/dashboard" className="dk-ticket-side">
+                            <Link to="/dashboard" target='_blank' className="dk-ticket-side">
                                 <span className="dk-role mono">I run a business</span>
                                 <span className="dk-action">
                                     Open vendor portal
