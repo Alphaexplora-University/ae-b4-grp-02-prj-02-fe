@@ -72,7 +72,7 @@ export function useDashboardViewModel() {
       const matchesStatus = statusFilter === "All" || b.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
-    .slice(0, 10);
+    .slice(0, 13);
 
   const unreadCount = notificationItems.filter((n) => !n.read).length;
 

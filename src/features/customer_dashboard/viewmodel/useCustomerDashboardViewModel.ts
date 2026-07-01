@@ -30,7 +30,7 @@ export function useCustomerDashboardViewModel() {
 
   // pagination
   const [currentPage, setCurrentPage] = useState(1)
-  const rowsPerPage = 15
+  const rowsPerPage = 13
 
   const totalPages = Math.max(1, Math.ceil(bookings.length / rowsPerPage))
   const paginatedBookings = bookings.slice(
