@@ -48,7 +48,7 @@ export interface BookingForm {
 }
 
 export const DEFAULT_BOOKING_FORM: BookingForm = {
-  vendor_id: '',
+  vendor_id: 'c66d2a92-c8a1-4e48-98de-1e078c9b02ea',
   service_requested: '',
   customer_phone: '',
   notes: '',
