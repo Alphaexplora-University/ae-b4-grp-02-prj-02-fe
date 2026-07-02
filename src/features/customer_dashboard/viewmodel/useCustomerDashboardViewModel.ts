@@ -63,13 +63,16 @@ export function useCustomerDashboardViewModel() {
       .finally(() => setVendorsLoading(false))
 
     const syncCustomerData = async () => {
-      const res = await bookingsApi.getCustomerBookings(parsedCustomer.email)
+      const res = await bookingsApi.getMyBookings()
       const customerBookings: Booking[] = Array.isArray(res.data?.data)
-        ? res.data.data.map((booking: Booking) => ({
+        ? res.data.data
+          .filter((booking: Booking) => booking.customer_email === parsedCustomer.email)
+          .map((booking: Booking) => ({
             ...booking,
             customer_id: parsedCustomer.id,
           }))
         : []
+
       const previousBookings = bookingsRef.current
       const changedBookings = customerBookings.filter(currentBooking => {
         const previousBooking = previousBookings.find(b => b.id === currentBooking.id)
@@ -233,8 +236,8 @@ export function useCustomerDashboardViewModel() {
   }
 
   const onOpenViewModal = (booking: Booking) => {
-  setSelectedBooking(booking)
-  setViewModalOpen(true)
+    setSelectedBooking(booking)
+    setViewModalOpen(true)
   }
 
   const onCloseViewModal = () => {
@@ -242,34 +245,34 @@ export function useCustomerDashboardViewModel() {
     setSelectedBooking(null)
   }
 
-return {
-  bookings: paginatedBookings,
-  currentPage,
-  totalPages,
-  onNextPage,
-  onPrevPage,
-  customer,
-  vendors,
-  vendorsLoading,
-  vendorsError,
-  notifications,
-  notificationOpen,
-  unreadCount,
-  bookingFormOpen,
-  bookingForm,
-  formError,
-  formSuccess,
-  selectedBooking,
-  viewModalOpen,
-  onOpenBookingForm,
-  onCloseBookingForm,
-  onBookingFormChange,
-  onSubmitBooking,
-  onToggleNotifications,
-  onMarkNotificationRead,
-  onMarkAllRead,
-  onSelectNotification,
-  onCloseViewModal,
-  onOpenViewModal,
-}
+  return {
+    bookings: paginatedBookings,
+    currentPage,
+    totalPages,
+    onNextPage,
+    onPrevPage,
+    customer,
+    vendors,
+    vendorsLoading,
+    vendorsError,
+    notifications,
+    notificationOpen,
+    unreadCount,
+    bookingFormOpen,
+    bookingForm,
+    formError,
+    formSuccess,
+    selectedBooking,
+    viewModalOpen,
+    onOpenBookingForm,
+    onCloseBookingForm,
+    onBookingFormChange,
+    onSubmitBooking,
+    onToggleNotifications,
+    onMarkNotificationRead,
+    onMarkAllRead,
+    onSelectNotification,
+    onCloseViewModal,
+    onOpenViewModal,
+  }
 }

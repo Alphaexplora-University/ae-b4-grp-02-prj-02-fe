@@ -12,8 +12,6 @@ export default function CustomerDashboardView() {
   const {
     customer,
     vendors,
-    vendorsLoading,
-    vendorsError,
     bookings,
     notifications,
     notificationOpen,
@@ -256,27 +254,12 @@ export default function CustomerDashboardView() {
               <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Vendor
               </label>
-              <select
-                value={bookingForm.vendor_id}
-                onChange={e => onBookingFormChange('vendor_id', e.target.value)}
-                disabled={vendorsLoading || vendors.length === 0}
-                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-3 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors"
-              >
-                <option value="">
-                  {vendorsLoading ? 'Loading vendors...' : 'Choose a vendor'}
-                </option>
-                {vendors.map(vendor => (
-                  <option key={vendor.id} value={vendor.id}>
-                    {vendor.business_name}
-                  </option>
-                ))}
-              </select>
-              {vendorsError && (
-                <p className="text-xs text-[#A82A2A]">{vendorsError}</p>
-              )}
-              {!vendorsLoading && !vendorsError && vendors.length === 0 && (
-                <p className="text-xs text-[var(--text-muted)]">No vendors are available yet.</p>
-              )}
+              <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] font-medium">
+                Test Business
+              </div>
+              <p className="text-xs text-[var(--text-muted)]">
+                This demo account is configured for a single test vendor only.
+              </p>
             </div>
 
             <div className="space-y-1.5">
